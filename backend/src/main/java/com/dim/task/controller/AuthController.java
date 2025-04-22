@@ -9,6 +9,7 @@ import com.dim.task.response.output.GlobalResponseError;
 import com.dim.task.response.output.JwtResponse;
 import com.dim.task.response.output.UserDTO;
 import com.dim.task.service.AuthService;
+import com.dim.task.service.impl.AuthServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,12 +20,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RestController
-@RequestMapping("/api/auth")
+@Slf4j
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 public class AuthController {
@@ -39,9 +42,12 @@ public class AuthController {
 		@ApiResponse(responseCode = "400", description = "Mot de passe incorrect",
 					content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
 		@ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+					content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+		@ApiResponse(responseCode = "500", description = "Erreur technique",
 					content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 	})
 	public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+		log.info("Tentative de connexion pour l'utilisateur : {}", loginRequest.getEmail());
 		String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
         return ResponseEntity.ok(new JwtResponse(token));
     }
@@ -52,12 +58,17 @@ public class AuthController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Création réussie",
 			            content = @Content(schema = @Schema(implementation = TaskResponse.class))),
-			@ApiResponse(responseCode = "400", description = "Email déjà utilisé en base",
+			@ApiResponse(responseCode = "400", description = "Requête invalide",
 						content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
 			@ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+						content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "409", description = "Email déjà utilisé",
+						content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "500", description = "Erreur technique",
 						content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 		})
 	public ResponseEntity<TaskResponse<UserDTO>> register(@Valid @RequestBody RegisterRequest registerRequest) {
+		log.info("Tentative de création de l'utilisateur avec l'email : {}", registerRequest.getEmail());
 		UserDTO user = authService.register(registerRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new TaskResponse<>(true, "Utilisateur inscrit avec succès", user));
 	}

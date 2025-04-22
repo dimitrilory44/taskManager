@@ -15,6 +15,7 @@ import com.dim.task.service.AuthService;
 import com.dim.task.service.JWTService;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implémentation de l'interface {@link AuthService} qui gère l'inscription et l'authentification des utilisateurs.
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
  * <p>Ce service interagit avec le dépôt {@link UserRepository}, l'encodeur de mot de passe,
  * un mapper pour convertir les entités en DTO, et le {@link JWTService} pour la génération de tokens JWT.</p>
  */
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -44,12 +46,16 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public UserDTO register(RegisterRequest register) {
 		userRepository.findByEmail(register.getEmail())
-			.ifPresent(user -> { throw new EmailAlreadyUsedException("Email déjà utilisé"); });
+			.ifPresent(user -> {
+				log.warn("Création échouée - email déjà utilisé : {}", register.getEmail());
+				throw new EmailAlreadyUsedException("Email déjà utilisé"); 
+			});
 		
 		register.setPassword(passwordEncoder.encode(register.getPassword()));
 				
 		User userSaved = userRepository.save(userMapper.toUser(register));
 		
+		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
 		return userMapper.toUserDTO(userSaved);
 	}
 
@@ -68,12 +74,17 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public String login(String email, String password) {
 		User userPresent = userRepository.findByEmail(email)
-			.orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
+			.orElseThrow(() -> {
+				log.warn("Connexion échouée - utilisateur non trouvé : {}", email);
+				return new UserNotFoundException("Utilisateur non trouvé");
+			});
 		
 		if(!passwordEncoder.matches(password, userPresent.getPassword())) {
+			log.warn("Connexion échouée - mot de passe invalide pour l'utilisateur : {}", email);
 			throw new InvalidCredentialsException("Mot de passe incorrect");
 		}
 		
+		log.info("Connexion réussie pour l'utilisateur : {}", email);
 		return jwtService.generateToken(email);
 	}
 	

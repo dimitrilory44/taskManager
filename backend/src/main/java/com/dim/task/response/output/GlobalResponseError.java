@@ -5,14 +5,17 @@ import java.util.Map;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Réponse d'erreur standard. Un seul des deux champs 'error' ou 'errors' est présent.")
+@Schema(description = "Réponse d'erreur standard.")
 public record GlobalResponseError(
 	
-	@Schema(description = "Message d'erreur global (ex: Utilisateur non trouvé)", example = "Utilisateur non trouvé")
+	@Schema(description = "Message d'erreur global (ex: Utilisateur non trouvé)", example = "Erreur de validation")
 	String error,
 	
 	@Schema(description = "Liste des erreurs de validation par champ", example = "{\"email\": \"L'email est invalide\"}")
-    Map<String, String> errors,
+    Map<String, String> fieldErrors,
+    
+    @Schema(description = "Message d'erreur plus détaillé", example = "Des champs requis sont manquants ou invalides.")
+    String message,
     
     @Schema(description = "Horodatage de l'erreur")
 	LocalDateTime timestamp,
