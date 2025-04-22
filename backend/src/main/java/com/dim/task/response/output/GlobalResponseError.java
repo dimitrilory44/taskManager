@@ -7,19 +7,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Réponse d'erreur standard.")
 public record GlobalResponseError(
-	
-	@Schema(description = "Message d'erreur global (ex: Utilisateur non trouvé)", example = "Erreur de validation")
-	String error,
-	
-	@Schema(description = "Liste des erreurs de validation par champ", example = "{\"email\": \"L'email est invalide\"}")
+    
+    @Schema(description = "Message d'erreur global (ex: Utilisateur non trouvé)", 
+            example = "Erreur de validation")
+    String error,
+    
+    @Schema(description = "Liste des erreurs de validation par champ", 
+            example = "{\"email\": \"L'email est invalide\"}")
     Map<String, String> fieldErrors,
     
-    @Schema(description = "Message d'erreur plus détaillé", example = "Des champs requis sont manquants ou invalides.")
+    @Schema(description = "Message d'erreur plus détaillé", 
+            example = "Des champs requis sont manquants ou invalides.")
     String message,
     
     @Schema(description = "Horodatage de l'erreur")
-	LocalDateTime timestamp,
-	
-	@Schema(description = "Code HTTP associé à l'erreur", example = "400")
-	int status
+    LocalDateTime timestamp,
+    
+    @Schema(description = "Code HTTP associé à l'erreur", example = "400")
+    int status
 ) {}

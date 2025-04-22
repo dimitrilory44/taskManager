@@ -42,165 +42,165 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AuthServiceImplTest {
 
 	@Mock
-    private UserRepository userRepository;
+	private UserRepository userRepository;
 
-    @Mock
-    private UserMapper userMapper;
+	@Mock
+	private UserMapper userMapper;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-    
-    @Mock
-    private JWTService jwtService;
-    
-    @InjectMocks
-    private AuthServiceImpl authService;
-    
-    private Validator validator;
-    
-    @BeforeEach
-    void setUp() {
-    	ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    	validator = factory.getValidator();
-    }
-    
-    @Test
-    void should_ReturnUserDTO_When_RegisterSuccessful() {
-        // Arrange
-        RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
+	@Mock
+	private PasswordEncoder passwordEncoder;
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword("encoded-password");
+	@Mock
+	private JWTService jwtService;
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(request.getEmail());
+	@InjectMocks
+	private AuthServiceImpl authService;
 
-        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
-        when(userMapper.toUser(request)).thenReturn(user);
-        when(userRepository.save(user)).thenReturn(user);
-        when(userMapper.toUserDTO(user)).thenReturn(userDTO);
+	private Validator validator;
 
-        // Act
-        UserDTO result = authService.register(request);
+	@BeforeEach
+	void setUp() {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		validator = factory.getValidator();
+	}
 
-        // Assert
-        assertNotNull(result);
-        assertEquals("dim@example.com", result.getEmail());
-        verify(userRepository).save(user);
-    }
-    
-    @Test
-    void should_ThrowEmailAlreadyUsedException_When_EmailExists() {
-    	// Arrange
-        RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
+	@Test
+	void should_ReturnUserDTO_When_RegisterSuccessful() {
+		// Arrange
+		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
-        when(userRepository.findByEmail("dim@example.com")).thenReturn(Optional.of(new User()));
-        
-        // Act & Assert
-        assertThrows(EmailAlreadyUsedException.class, () -> authService.register(request));
-        verify(userRepository, never()).save(any());
-    }
+		User user = new User();
+		user.setEmail(request.getEmail());
+		user.setPassword("encoded-password");
 
-    @Test
-    void should_ReturnToken_When_LoginSuccessful() {
-    	// Arrange
-    	String email = "test@example.com";
-        String rawPassword = "password";
-        String encodedPassword = "encodedPassword";
-        User mockUser = new User();
-        mockUser.setEmail(email);
-        mockUser.setPassword(encodedPassword);
+		UserDTO userDTO = new UserDTO();
+		userDTO.setEmail(request.getEmail());
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
-        when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
-        when(jwtService.generateToken(email)).thenReturn("fake-jwt-token");
-        
-        // Act
-        String token = authService.login(email, rawPassword);
+		when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+		when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
+		when(userMapper.toUser(request)).thenReturn(user);
+		when(userRepository.save(user)).thenReturn(user);
+		when(userMapper.toUserDTO(user)).thenReturn(userDTO);
 
-        // Assert
-        assertEquals("fake-jwt-token", token);
-        verify(jwtService).generateToken(email);
-    }
-    
-    @Test
-    void should_ThrowUserNotFoundException_When_EmailDoesNotExist() {
-    	// Arrange
-    	String nonExistingEmail = "test@example.com";
-        
-        when(userRepository.findByEmail(nonExistingEmail)).thenReturn(Optional.empty());
-        
-        // Act & Assert
-        assertThrows(UserNotFoundException.class, () -> authService.login(nonExistingEmail, "password"));
-    }
-    
-    @Test
-    void should_ThrowInvalidCredentialsException_When_PasswordIsInvalid() {
-    	// Arrange
-        String email = "test@example.com";
-        String rawPassword = "wrongPassword";
-        String encodedPassword = passwordEncoder.encode("realPassword");
+		// Act
+		UserDTO result = authService.register(request);
 
-        User mockUser = new User();
-        mockUser.setEmail(email);
-        mockUser.setPassword(encodedPassword);
-    	
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
-    	when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(false);
-    	
-    	// Act & Assert
-        assertThrows(InvalidCredentialsException.class, () -> authService.login(email, rawPassword));
-        verify(jwtService, never()).generateToken(any());
-    }
-    
-    @Test
-    void should_AutoDetectLoginThrowInvalidEmailException_When_EmailIsInvalid() {
-    	// Arrange
-    	LoginRequest request = new LoginRequest("invalid-email", "password");
+		// Assert
+		assertNotNull(result);
+		assertEquals("dim@example.com", result.getEmail());
+		verify(userRepository).save(user);
+	}
 
-        // Act & Then
-        Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
+	@Test
+	void should_ThrowEmailAlreadyUsedException_When_EmailExists() {
+		// Arrange
+		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
-        assertEquals(1, violations.size());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("email")));
-    }
-    
-    @Test
-    void should_AutoDetectLoginThrowInvalidPasswordException_When_PasswordIsInvalid() {
-    	// Arrange
-    	LoginRequest request = new LoginRequest("test@example.com", "");
+		when(userRepository.findByEmail("dim@example.com")).thenReturn(Optional.of(new User()));
 
-        // Act & Then
-        Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
+		// Act & Assert
+		assertThrows(EmailAlreadyUsedException.class, () -> authService.register(request));
+		verify(userRepository, never()).save(any());
+	}
 
-        assertEquals(1, violations.size());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
-    }
-    
-    @Test
-    void should_AutoDetectRegisterThrowInvalidEmailException_When_EmailIsInvalid() {
-    	// Arrange
-    	RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "invalid-email", "password");
+	@Test
+	void should_ReturnToken_When_LoginSuccessful() {
+		// Arrange
+		String email = "test@example.com";
+		String rawPassword = "password";
+		String encodedPassword = "encodedPassword";
+		User mockUser = new User();
+		mockUser.setEmail(email);
+		mockUser.setPassword(encodedPassword);
 
-        // Act & Then
-        Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(request);
+		when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
+		when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
+		when(jwtService.generateToken(email)).thenReturn("fake-jwt-token");
 
-        assertEquals(1, violations.size());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("email")));
-    }
-    
-    @Test
-    void should_AutoDetectRegisterThrowInvalidPasswordException_When_PasswordIsInvalid() {
-    	// Arrange
-    	RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "example@email.com", "");
+		// Act
+		String token = authService.login(email, rawPassword);
 
-        // Act & Then
-        Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(request);
+		// Assert
+		assertEquals("fake-jwt-token", token);
+		verify(jwtService).generateToken(email);
+	}
 
-        assertEquals(1, violations.size());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
-    }
-    
+	@Test
+	void should_ThrowUserNotFoundException_When_EmailDoesNotExist() {
+		// Arrange
+		String nonExistingEmail = "test@example.com";
+
+		when(userRepository.findByEmail(nonExistingEmail)).thenReturn(Optional.empty());
+
+		// Act & Assert
+		assertThrows(UserNotFoundException.class, () -> authService.login(nonExistingEmail, "password"));
+	}
+
+	@Test
+	void should_ThrowInvalidCredentialsException_When_PasswordIsInvalid() {
+		// Arrange
+		String email = "test@example.com";
+		String rawPassword = "wrongPassword";
+		String encodedPassword = passwordEncoder.encode("realPassword");
+
+		User mockUser = new User();
+		mockUser.setEmail(email);
+		mockUser.setPassword(encodedPassword);
+
+		when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
+		when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(false);
+
+		// Act & Assert
+		assertThrows(InvalidCredentialsException.class, () -> authService.login(email, rawPassword));
+		verify(jwtService, never()).generateToken(any());
+	}
+
+	@Test
+	void should_AutoDetectLoginThrowInvalidEmailException_When_EmailIsInvalid() {
+		// Arrange
+		LoginRequest request = new LoginRequest("invalid-email", "password");
+
+		// Act & Then
+		Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
+
+		assertEquals(1, violations.size());
+		assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+	}
+
+	@Test
+	void should_AutoDetectLoginThrowInvalidPasswordException_When_PasswordIsInvalid() {
+		// Arrange
+		LoginRequest request = new LoginRequest("test@example.com", "");
+
+		// Act & Then
+		Set<ConstraintViolation<LoginRequest>> violations = validator.validate(request);
+
+		assertEquals(1, violations.size());
+		assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
+	}
+
+	@Test
+	void should_AutoDetectRegisterThrowInvalidEmailException_When_EmailIsInvalid() {
+		// Arrange
+		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "invalid-email", "password");
+
+		// Act & Then
+		Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(request);
+
+		assertEquals(1, violations.size());
+		assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+	}
+
+	@Test
+	void should_AutoDetectRegisterThrowInvalidPasswordException_When_PasswordIsInvalid() {
+		// Arrange
+		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "example@email.com", "");
+
+		// Act & Then
+		Set<ConstraintViolation<RegisterRequest>> violations = validator.validate(request);
+
+		assertEquals(1, violations.size());
+		assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
+	}
+
 }

@@ -9,32 +9,32 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-	
-	@Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/auth/**",
-                	"/v3/api-docs/**", 
-                	"/swagger-ui/**", 
-                	"/swagger-ui.html"
-                ).permitAll()
-                .anyRequest().authenticated()
-            );
 
-        return http.build();
-    }
-    
-    @Bean
-    PasswordEncoder passwordEncoder() {
-    	return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    JWTProperties jwtProperties() {
-        return new JWTProperties();
-    }
-    
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+		.csrf(csrf -> csrf.disable())
+		.authorizeHttpRequests(auth -> auth
+				.requestMatchers(
+						"/api/auth/**",
+						"/v3/api-docs/**", 
+						"/swagger-ui/**", 
+						"/swagger-ui.html"
+						).permitAll()
+				.anyRequest().authenticated()
+				);
+
+		return http.build();
+	}
+
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	JWTProperties jwtProperties() {
+		return new JWTProperties();
+	}
+
 }

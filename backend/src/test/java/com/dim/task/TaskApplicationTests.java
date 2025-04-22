@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TaskApplicationTests {
 
 	@Autowired
-    private JWTProperties jwtProperties;
-	
+	private JWTProperties jwtProperties;
+
 	@Test
-    void jwtConfigShouldBeLoaded() {
-        assertNotNull(jwtProperties.getSecret());
-        assertTrue(jwtProperties.getExpiration() > 0);
-    }
+	void jwtConfigShouldBeLoaded() {
+		assertNotNull(jwtProperties.getSecret());
+		assertTrue(jwtProperties.getExpiration() > 0);
+	}
 
 }

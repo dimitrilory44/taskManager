@@ -27,23 +27,23 @@ public interface AuthService {
 	 * @throws EmailAlreadyUsedException si l'adresse email est déjà utilisée.
 	 */
 	UserDTO register(RegisterRequest request);
-	
-	/**
-     * Authentifie un utilisateur à partir de son email et de son mot de passe.
-     * 
-     * <p>Étapes générales :
-     * <ul>
-     *   <li>Recherche de l'utilisateur par email.</li>
-     *   <li>Vérification de la validité du mot de passe saisi.</li>
-     *   <li>Si les informations sont valides, génère un JWT via le {@code JWTService}.</li>
-     * </ul>
-     * </p>
-     *
-     * @param email l'email de l'utilisateur.
-     * @param password le mot de passe (en clair) à vérifier.
-     * @return un token JWT valide en cas d'authentification réussie.
-     * @throws UserNotFoundException si l'email ne correspond à aucun utilisateur existant.
-     * @throws InvalidCredentialsException si le mot de passe est incorrect.
-     */
+
+	/**	
+	 * Authentifie un utilisateur à partir de son email et de son mot de passe.
+	 * 
+	 * <p>Étapes générales :
+	 * <ul>
+	 *   <li>Recherche de l'utilisateur par email.</li>
+	 *   <li>Vérification de la validité du mot de passe saisi.</li>
+	 *   <li>Si les informations sont valides, génère un JWT via le {@code JWTService}.</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * @param email l'email de l'utilisateur.
+	 * @param password le mot de passe (en clair) à vérifier.
+	 * @return un token JWT valide en cas d'authentification réussie.
+	 * @throws UserNotFoundException si l'email ne correspond à aucun utilisateur existant.
+	 * @throws InvalidCredentialsException si le mot de passe est incorrect.
+	 */
 	String login(String email, String password);
 }
