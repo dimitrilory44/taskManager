@@ -2,6 +2,9 @@ package com.dim.task.service.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 
@@ -49,7 +52,12 @@ public class JWTServiceImpl implements JWTService {
 	@Override
 	public String generateToken(String email) {
 		SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+		
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("roles", List.of("ROLE_USER"));
+		
         return Jwts.builder()
+        		.setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))

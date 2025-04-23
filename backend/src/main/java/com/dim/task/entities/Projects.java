@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Project {
+public class Projects {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +27,9 @@ public class Project {
 	private String description;
 	
 	@ManyToOne
-	private User user;
+	private Users user;
 	
 	@OneToMany(mappedBy="project")
-	private List<Task> tasks;
+	private List<Tasks> tasks;
 	
 }

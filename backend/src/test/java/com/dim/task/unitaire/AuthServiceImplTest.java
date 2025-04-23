@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.dim.task.entities.User;
+import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
 import com.dim.task.exception.UserNotFoundException;
@@ -69,7 +69,7 @@ class AuthServiceImplTest {
 		// Arrange
 		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
-		User user = new User();
+		Users user = new Users();
 		user.setEmail(request.getEmail());
 		user.setPassword("encoded-password");
 
@@ -96,7 +96,7 @@ class AuthServiceImplTest {
 		// Arrange
 		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
-		when(userRepository.findByEmail("dim@example.com")).thenReturn(Optional.of(new User()));
+		when(userRepository.findByEmail("dim@example.com")).thenReturn(Optional.of(new Users()));
 
 		// Act & Assert
 		assertThrows(EmailAlreadyUsedException.class, () -> authService.register(request));
@@ -109,7 +109,7 @@ class AuthServiceImplTest {
 		String email = "test@example.com";
 		String rawPassword = "password";
 		String encodedPassword = "encodedPassword";
-		User mockUser = new User();
+		Users mockUser = new Users();
 		mockUser.setEmail(email);
 		mockUser.setPassword(encodedPassword);
 
@@ -143,7 +143,7 @@ class AuthServiceImplTest {
 		String rawPassword = "wrongPassword";
 		String encodedPassword = passwordEncoder.encode("realPassword");
 
-		User mockUser = new User();
+		Users mockUser = new Users();
 		mockUser.setEmail(email);
 		mockUser.setPassword(encodedPassword);
 

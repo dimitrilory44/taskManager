@@ -3,9 +3,10 @@ package com.dim.task.service.impl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dim.task.entities.User;
+import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
+import com.dim.task.exception.UserNameAlreadyUsedException;
 import com.dim.task.exception.UserNotFoundException;
 import com.dim.task.mapper.UserMapper;
 import com.dim.task.repository.UserRepository;
@@ -51,9 +52,15 @@ public class AuthServiceImpl implements AuthService {
 				throw new EmailAlreadyUsedException("Email déjà utilisé"); 
 			});
 		
+		userRepository.findByUserName(register.getUserName())
+			.ifPresent(user -> {
+				log.warn("Création échouée - username déjà utilisé : {}", register.getUserName());
+				throw new UserNameAlreadyUsedException("UserName déjà utilisé");
+			});
+		
 		register.setPassword(passwordEncoder.encode(register.getPassword()));
 				
-		User userSaved = userRepository.save(userMapper.toUser(register));
+		Users userSaved = userRepository.save(userMapper.toUser(register));
 		
 		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
 		return userMapper.toUserDTO(userSaved);
@@ -73,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
 	 */
 	@Override
 	public String login(String email, String password) {
-		User userPresent = userRepository.findByEmail(email)
+		Users userPresent = userRepository.findByEmail(email)
 			.orElseThrow(() -> {
 				log.warn("Connexion échouée - utilisateur non trouvé : {}", email);
 				return new UserNotFoundException("Utilisateur non trouvé");

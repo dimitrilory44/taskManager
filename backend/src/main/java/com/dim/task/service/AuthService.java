@@ -18,7 +18,7 @@ public interface AuthService {
 	 *   <li>Vérifie si l'utilisateur avec l'adresse email donnée existe déjà en base de données.
 	 *       Si c'est le cas, une {@link EmailAlreadyUsedException} est levée.</li>
 	 *   <li>Encode le mot de passe en clair avec le {@code passwordEncoder} configuré (généralement Bcrypt).</li>
-	 *   <li>Transforme le {@link RegisterRequest} en entité {@link User} et la persiste dans la base.</li>
+	 *   <li>Transforme le {@link RegisterRequest} en entité {@link Users} et la persiste dans la base.</li>
 	 *   <li>Retourne une représentation {@link UserDTO} de l'utilisateur sauvegardé.</li>
 	 * </ul>
 	 *
@@ -46,4 +46,5 @@ public interface AuthService {
 	 * @throws InvalidCredentialsException si le mot de passe est incorrect.
 	 */
 	String login(String email, String password);
+
 }

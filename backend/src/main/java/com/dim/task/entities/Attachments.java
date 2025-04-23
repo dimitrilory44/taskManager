@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Attachment {
+public class Attachments {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +24,5 @@ public class Attachment {
 	private String fileUrl;
 	
 	@ManyToOne
-	private Task task;
+	private Tasks task;
 }

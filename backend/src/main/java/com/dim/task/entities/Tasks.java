@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task {
+public class Tasks {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +33,10 @@ public class Task {
 	private String description;
 	
 	@ManyToOne
-	private Project project;
+	private Projects project;
 	
 	@OneToMany(mappedBy = "task")
-	private List<Attachment> attachments;
+	private List<Attachments> attachments;
 	
 	@Enumerated(EnumType.STRING)
 	private Status status;

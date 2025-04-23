@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.dim.task.entities.User;
+import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
 import com.dim.task.exception.UserNotFoundException;
@@ -55,7 +55,7 @@ class AuthServiceIntegrationTest {
         UserDTO userDTO = authService.register(request);
 
         // Then
-        User user = userRepository.findByEmail("email@example.com").orElseThrow();
+        Users user = userRepository.findByEmail("email@example.com").orElseThrow();
 
         assertEquals(user.getEmail(), userDTO.getEmail());
         assertTrue(passwordEncoder.matches("password", user.getPassword()));
@@ -64,7 +64,7 @@ class AuthServiceIntegrationTest {
     @Test
     void shouldRegisterUserAndEncodePassword_email__already__used() {
         // Given
-    	User existingUser = new User();
+    	Users existingUser = new Users();
         existingUser.setUserName("johndoe");
         existingUser.setEmail("test@example.com");
         existingUser.setPassword(passwordEncoder.encode("password"));
@@ -106,10 +106,11 @@ class AuthServiceIntegrationTest {
     @Test
     void shouldLoginAndReturnToken() {
         // Given
-        User user = new User();
+        Users user = new Users();
         user.setEmail("test@email.com");
         user.setPassword(passwordEncoder.encode("password123"));
         userRepository.save(user);
+        userRepository.flush();
 
         // When
         String token = authService.login("test@email.com", "password123");
@@ -118,11 +119,11 @@ class AuthServiceIntegrationTest {
         assertNotNull(token);
         assertFalse(token.isEmpty());
     }
-    
+   
     @Test
     void shouldLoginAndReturnToken_invalid_password() {
         // Given
-        User userPasswordInvalid = new User();
+        Users userPasswordInvalid = new Users();
         userPasswordInvalid.setEmail("test@email.com");
         userPasswordInvalid.setPassword(passwordEncoder.encode("password123"));
         userRepository.save(userPasswordInvalid);
