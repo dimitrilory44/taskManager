@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.dim.task.exception.CustomAccessDeniedHandler;
+import com.dim.task.exception.CustomAuthenticationEntryPoint;
 import com.dim.task.filter.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	
+	private final ApiProperties apiProperties;
+	
 	private final JwtAuthenticationFilter jwtAuthFilter;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,14 +32,19 @@ public class SecurityConfig {
 		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers(
-						"/api/v1/auth/**",
+						"/" + apiProperties.getPrefix() + "/" + apiProperties.getVersion() + "/auth/**",
 						"/h2-console",
 						"/v3/api-docs/**", 
 						"/swagger-ui/**", 
 						"/swagger-ui.html"
 						).permitAll()
+				.requestMatchers("/" + apiProperties.getPrefix() + "/" + apiProperties.getVersion() + "/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated())
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.exceptionHandling(exception -> exception
+				   .authenticationEntryPoint(customAuthenticationEntryPoint)
+				   .accessDeniedHandler(customAccessDeniedHandler)
+				);
 		return http.build();
 	}
 		

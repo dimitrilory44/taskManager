@@ -39,7 +39,7 @@ public class Users implements UserDetails {
     private String password;
     private boolean enabled;
 
-    private String role; // Ex: "ROLE_USER" ou "ROLE_ADMIN"
+    private String role; // Ex: "USER" ou "ADMIN"
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Projects> projects;
@@ -51,7 +51,7 @@ public class Users implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName; // ou email si tu veux authentifier par email
+        return userName;
     }
 
     @Override

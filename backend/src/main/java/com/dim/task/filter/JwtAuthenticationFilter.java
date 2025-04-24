@@ -32,35 +32,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final UserDetailsService userDetailsService;
 
 	/**
-     * Méthode appelée automatiquement pour chaque requête HTTP reçue.
-     *
-     * @param request la requête HTTP entrante
-     * @param response la réponse HTTP en cours
-     * @param filterChain la chaîne de filtres de sécurité
-     */
+	 * Méthode appelée automatiquement pour chaque requête HTTP reçue.
+	 *
+	 * @param request la requête HTTP entrante
+	 * @param response la réponse HTTP en cours
+	 * @param filterChain la chaîne de filtres de sécurité
+	 */
 	@Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-		
-        // Extraire le token de la requête
-        String token = jwtService.extractToken(request);
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-        if (token != null && jwtService.isTokenValid(token)) {
-            // Extraire le nom d'utilisateur du token
-            String username = jwtService.extractUsername(token);
+		// Extraire le token de la requête
+		String token = jwtService.extractToken(request);
 
-            // Charger les détails de l'utilisateur
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		if (token != null && jwtService.isTokenValid(token)) {
+			// Extraire le nom d'utilisateur du token
+			String username = jwtService.extractUsername(token);
 
-            // Créer un objet Authentication pour Spring Security
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+			// Charger les détails de l'utilisateur
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // Placer l'objet Authentication dans le contexte de sécurité
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+			// Créer un objet Authentication pour Spring Security
+			Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        // Passer au filtre suivant dans la chaîne de filtres
-        filterChain.doFilter(request, response);
-    }
-	
+			// Placer l'objet Authentication dans le contexte de sécurité
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		}
+
+		// Passer au filtre suivant dans la chaîne de filtres
+		filterChain.doFilter(request, response);
+	}
+
 }
