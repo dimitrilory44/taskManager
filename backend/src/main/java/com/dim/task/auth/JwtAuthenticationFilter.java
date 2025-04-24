@@ -1,4 +1,4 @@
-package com.dim.task.filter;
+package com.dim.task.auth;
 
 import java.io.IOException;
 
@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.dim.task.service.JWTService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

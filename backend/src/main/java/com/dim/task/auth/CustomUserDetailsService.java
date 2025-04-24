@@ -1,4 +1,4 @@
-package com.dim.task.service;
+package com.dim.task.auth;
 
 import java.util.List;
 

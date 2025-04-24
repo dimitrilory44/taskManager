@@ -9,9 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.dim.task.auth.JwtAuthenticationFilter;
 import com.dim.task.exception.CustomAccessDeniedHandler;
 import com.dim.task.exception.CustomAuthenticationEntryPoint;
-import com.dim.task.filter.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 

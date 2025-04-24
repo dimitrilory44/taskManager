@@ -1,4 +1,4 @@
-package com.dim.task.config;
+package com.dim.task.auth;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

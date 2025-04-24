@@ -3,6 +3,7 @@ package com.dim.task.service.impl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dim.task.auth.JWTService;
 import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
@@ -12,7 +13,6 @@ import com.dim.task.repository.UserRepository;
 import com.dim.task.response.input.RegisterRequest;
 import com.dim.task.response.output.UserDTO;
 import com.dim.task.service.AuthService;
-import com.dim.task.service.JWTService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

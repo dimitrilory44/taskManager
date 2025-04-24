@@ -1,4 +1,4 @@
-package com.dim.task.service.impl;
+package com.dim.task.auth.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -11,8 +11,8 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
-import com.dim.task.config.JWTProperties;
-import com.dim.task.service.JWTService;
+import com.dim.task.auth.JWTProperties;
+import com.dim.task.auth.JWTService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
