@@ -47,4 +47,5 @@ public class TaskController {
         List<TaskDTO> taskList = taskService.getAllTask();
         return ResponseEntity.ok(taskList);
     }
+	
 }

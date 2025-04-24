@@ -1,7 +1,13 @@
 package com.dim.task.entities;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,24 +19,58 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Users {
+@AllArgsConstructor
+public class Users implements UserDetails {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3992852993771809301L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	private String name;
-	
-	private String firstName;
-	
-	private String userName;
-	
-	private String email;
-	
-	private String password;
-	
-	@OneToMany(mappedBy="user")
-	private List<Projects> projects;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String firstName;
+    private String userName;
+    private String email;
+    private String password;
+    private boolean enabled;
+
+    private String role; // Ex: "ROLE_USER" ou "ROLE_ADMIN"
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Projects> projects;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
+    public String getUsername() {
+        return userName; // ou email si tu veux authentifier par email
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

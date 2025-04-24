@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
-import com.dim.task.exception.UserNameAlreadyUsedException;
 import com.dim.task.exception.UserNotFoundException;
 import com.dim.task.mapper.UserMapper;
 import com.dim.task.repository.UserRepository;
@@ -50,12 +49,6 @@ public class AuthServiceImpl implements AuthService {
 			.ifPresent(user -> {
 				log.warn("Création échouée - email déjà utilisé : {}", register.getEmail());
 				throw new EmailAlreadyUsedException("Email déjà utilisé"); 
-			});
-		
-		userRepository.findByUserName(register.getUserName())
-			.ifPresent(user -> {
-				log.warn("Création échouée - username déjà utilisé : {}", register.getUserName());
-				throw new UserNameAlreadyUsedException("UserName déjà utilisé");
 			});
 		
 		register.setPassword(passwordEncoder.encode(register.getPassword()));

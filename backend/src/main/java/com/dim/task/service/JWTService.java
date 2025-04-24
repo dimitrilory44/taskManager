@@ -1,5 +1,7 @@
 package com.dim.task.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * Service responsable de la génération des tokens JWT pour l'authentification.
  * 
@@ -18,4 +20,11 @@ public interface JWTService {
 	 * @return un JWT signé sous forme de chaîne de caractères.
 	 */
 	String generateToken(String userName);
+	
+	boolean isTokenValid(String token);
+	
+	String extractUsername(String token);
+	
+	String extractToken(HttpServletRequest request);
+	
 }

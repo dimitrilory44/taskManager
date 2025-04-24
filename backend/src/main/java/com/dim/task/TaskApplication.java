@@ -2,12 +2,10 @@ package com.dim.task;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
-import com.dim.task.config.JWTProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties(JWTProperties.class)
+@ConfigurationPropertiesScan
 public class TaskApplication {
 
 	public static void main(String[] args) {
