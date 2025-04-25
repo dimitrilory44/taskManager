@@ -16,7 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.dim.task.auth.JWTService;
+import com.dim.task.auth.service.JWTService;
+import com.dim.task.auth.service.impl.AuthServiceImpl;
 import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
@@ -26,7 +27,6 @@ import com.dim.task.repository.UserRepository;
 import com.dim.task.response.input.LoginRequest;
 import com.dim.task.response.input.RegisterRequest;
 import com.dim.task.response.output.UserDTO;
-import com.dim.task.service.impl.AuthServiceImpl;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -109,20 +109,22 @@ class AuthServiceImplTest {
 		String email = "test@example.com";
 		String rawPassword = "password";
 		String encodedPassword = "encodedPassword";
+		String role = "USER";
 		Users mockUser = new Users();
 		mockUser.setEmail(email);
 		mockUser.setPassword(encodedPassword);
+		mockUser.setRole(role);
 
 		when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
 		when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
-		when(jwtService.generateToken(email)).thenReturn("fake-jwt-token");
+		when(jwtService.generateToken(email, role)).thenReturn("fake-jwt-token");
 
 		// Act
 		String token = authService.login(email, rawPassword);
 
 		// Assert
 		assertEquals("fake-jwt-token", token);
-		verify(jwtService).generateToken(email);
+		verify(jwtService).generateToken(email, role);
 	}
 
 	@Test
@@ -152,7 +154,7 @@ class AuthServiceImplTest {
 
 		// Act & Assert
 		assertThrows(InvalidCredentialsException.class, () -> authService.login(email, rawPassword));
-		verify(jwtService, never()).generateToken(any());
+		verify(jwtService, never()).generateToken(any(), any());
 	}
 
 	@Test

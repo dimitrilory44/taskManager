@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class TaskResponse<T> {
 	private String message;
-	private T data;
+	private T user;
 }

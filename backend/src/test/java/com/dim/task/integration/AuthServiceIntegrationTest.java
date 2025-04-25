@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.dim.task.auth.service.AuthService;
 import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
@@ -14,7 +15,6 @@ import com.dim.task.repository.UserRepository;
 import com.dim.task.response.input.LoginRequest;
 import com.dim.task.response.input.RegisterRequest;
 import com.dim.task.response.output.UserDTO;
-import com.dim.task.service.AuthService;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;

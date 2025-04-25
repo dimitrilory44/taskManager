@@ -1,5 +1,6 @@
 package com.dim.task.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -10,13 +11,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dim.task.auth.JwtAuthenticationFilter;
-import com.dim.task.exception.CustomAccessDeniedHandler;
-import com.dim.task.exception.CustomAuthenticationEntryPoint;
+import com.dim.task.auth.exception.CustomAccessDeniedHandler;
+import com.dim.task.auth.exception.CustomAuthenticationEntryPoint;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableMethodSecurity
+@EnableConfigurationProperties
 @RequiredArgsConstructor
 public class SecurityConfig {
 	

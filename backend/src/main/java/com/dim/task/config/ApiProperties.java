@@ -11,4 +11,6 @@ public class ApiProperties {
 	private String prefix;
 	
 	private String version;
+	
+	private AdminUser admin;
 }
