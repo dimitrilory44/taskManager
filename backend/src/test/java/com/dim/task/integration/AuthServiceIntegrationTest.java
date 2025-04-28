@@ -11,6 +11,7 @@ import com.dim.task.entities.Users;
 import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
 import com.dim.task.exception.UserNotFoundException;
+import com.dim.task.model.Role;
 import com.dim.task.repository.UserRepository;
 import com.dim.task.response.input.LoginRequest;
 import com.dim.task.response.input.RegisterRequest;
@@ -109,8 +110,8 @@ class AuthServiceIntegrationTest {
         Users user = new Users();
         user.setEmail("test@email.com");
         user.setPassword(passwordEncoder.encode("password123"));
+        user.setRole(Role.USER);
         userRepository.save(user);
-        userRepository.flush();
 
         // When
         String token = authService.login("test@email.com", "password123");

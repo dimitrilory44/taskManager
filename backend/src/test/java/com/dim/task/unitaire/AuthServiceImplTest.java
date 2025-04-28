@@ -23,6 +23,7 @@ import com.dim.task.exception.EmailAlreadyUsedException;
 import com.dim.task.exception.InvalidCredentialsException;
 import com.dim.task.exception.UserNotFoundException;
 import com.dim.task.mapper.UserMapper;
+import com.dim.task.model.Role;
 import com.dim.task.repository.UserRepository;
 import com.dim.task.response.input.LoginRequest;
 import com.dim.task.response.input.RegisterRequest;
@@ -109,7 +110,7 @@ class AuthServiceImplTest {
 		String email = "test@example.com";
 		String rawPassword = "password";
 		String encodedPassword = "encodedPassword";
-		String role = "USER";
+		Role role = Role.USER;
 		Users mockUser = new Users();
 		mockUser.setEmail(email);
 		mockUser.setPassword(encodedPassword);
@@ -117,14 +118,14 @@ class AuthServiceImplTest {
 
 		when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
 		when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
-		when(jwtService.generateToken(email, role)).thenReturn("fake-jwt-token");
+		when(jwtService.generateToken(email, role.toString())).thenReturn("fake-jwt-token");
 
 		// Act
 		String token = authService.login(email, rawPassword);
 
 		// Assert
 		assertEquals("fake-jwt-token", token);
-		verify(jwtService).generateToken(email, role);
+		verify(jwtService).generateToken(email, role.toString());
 	}
 
 	@Test

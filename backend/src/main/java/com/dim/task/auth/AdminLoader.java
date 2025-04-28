@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.dim.task.config.ApiProperties;
 import com.dim.task.entities.Users;
+import com.dim.task.model.Role;
 import com.dim.task.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class AdminLoader implements CommandLineRunner {
             adminUser.setUserName(apiProperties.getAdmin().getUserName());
             adminUser.setEmail(apiProperties.getAdmin().getEmail());
             adminUser.setPassword(passwordEncoder.encode(apiProperties.getAdmin().getPassword()));
-            adminUser.setRole(apiProperties.getAdmin().getRole());
+            adminUser.setRole(Role.ADMIN);
             adminUser.setEnabled(true);
             userRepository.save(adminUser);
             log.info("Utilisateur admin créé");
