@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/${api.prefix}/${api.version}/task")
 @RequiredArgsConstructor
-@Tag(name = "TaskManager", description = "Endpoints for task management")
+@Tag(name = "Gestion des taches", description = "Endpoints for task management")
 public class TaskController {
 
 	private final TaskService taskService;
@@ -33,10 +33,12 @@ public class TaskController {
 	@GetMapping("/")
     @Operation(summary = "Task List", description = "Récupère la liste des taches")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Authentification réussie",
+        @ApiResponse(responseCode = "200", description = "Récupération de la liste de tache réussie",
             content = @Content(schema = @Schema(implementation = TaskDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Mot de passe incorrect",
+        @ApiResponse(responseCode = "401", description = "Mot de passe incorrect",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+        @ApiResponse(responseCode = "401", description = "Authentication nécessaire",
+        	content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "500", description = "Erreur technique",

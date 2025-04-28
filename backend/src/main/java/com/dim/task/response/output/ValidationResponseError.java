@@ -6,9 +6,9 @@ import java.util.Map;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Réponse d'erreur standard.")
-public record GlobalResponseError(
+public record ValidationResponseError(
     
-    @Schema(description = "Message d'erreur global (ex: Utilisateur non trouvé)", 
+    @Schema(description = "Message d'erreur global (ex: Erreur de validation)", 
             example = "Erreur de validation")
     String error,
     

@@ -2,12 +2,16 @@ package com.dim.task.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dim.task.response.output.GlobalResponseError;
+import com.dim.task.response.output.TaskResponse;
 import com.dim.task.response.output.UserDTO;
 import com.dim.task.service.UserService;
 
@@ -22,9 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/${api.prefix}/${api.version}/users")
+@RequestMapping("/${api.prefix}/${api.version}/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "Gestion utilisateur", description = "Endpoints for users management")
+@Tag(name = "Gestion des utilisateurs", description = "Endpoints for users management")
 public class UserController {
 	
 	private final UserService userService;
@@ -34,8 +38,10 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Récuperation réussie",
             content = @Content(schema = @Schema(implementation = UserDTO.class))),
-        @ApiResponse(responseCode = "400", description = "Mot de passe incorrect",
+        @ApiResponse(responseCode = "401", description = "Mot de passe incorrect",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+        @ApiResponse(responseCode = "401", description = "Authentication nécessaire",
+        	content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "500", description = "Erreur technique",
@@ -45,6 +51,23 @@ public class UserController {
         log.info("Tentative de récupération de la liste des utilisateurs");
         List<UserDTO> userList = userService.getAllUsers();
         return ResponseEntity.ok(userList);
+    }
+	
+	@DeleteMapping("/{id}")
+	@Operation(summary = "Delete User", description = "Supprime un utilisateur en fonction de son id")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Utilisateur supprimé avec succès",
+		    content = @Content(schema = @Schema(implementation = TaskResponse.class))),
+	    @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+	        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class))),
+	    @ApiResponse(responseCode = "500", description = "Erreur technique",
+	        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class)))
+	})
+    public ResponseEntity<TaskResponse<UserDTO>> deleteUser(@PathVariable Long id) {
+		UserDTO user = userService.getUserById(id);
+        log.info("Tentative de suppression d'un utilisateur {}", user);
+        userService.deleteUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new TaskResponse<>("Utilisateur supprimé avec succès", user));
     }
 
 }

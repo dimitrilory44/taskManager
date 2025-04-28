@@ -7,8 +7,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.dim.task.model.Role;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,7 +43,8 @@ public class Users implements UserDetails {
     private String password;
     private boolean enabled;
 
-    private String role; // Ex: "USER" ou "ADMIN"
+    @Enumerated(EnumType.STRING)
+    private Role role; // Ex: "USER" ou "ADMIN"
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Projects> projects;

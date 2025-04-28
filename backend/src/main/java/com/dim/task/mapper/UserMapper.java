@@ -24,8 +24,8 @@ public interface UserMapper {
 	
 	List<UserDTO> toUsersDTO(List<Users> users);
 
-	default String setDefaultRole() {
-		return Role.USER.toString();
+	default Role setDefaultRole() {
+		return Role.USER;
 	}
 	
 	default Boolean setDefaultEnabled() {

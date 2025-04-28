@@ -3,6 +3,7 @@ package com.dim.task.auth;
 import java.util.List;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,10 +41,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         Users user = userRepository.findByEmail(username)
             .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + username));
 
-        return new org.springframework.security.core.userdetails.User(
+        String roleName = user.getRole().toString();
+        String authority = "ROLE_" + roleName;
+        
+        return new User(
             user.getEmail(),
             user.getPassword(),
-            List.of(new SimpleGrantedAuthority("ROLE_USER")) // ou une vraie liste de rôles
+            List.of(new SimpleGrantedAuthority(authority)) 
         );
     }
 }

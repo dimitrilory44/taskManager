@@ -8,6 +8,7 @@ import com.dim.task.auth.service.AuthService;
 import com.dim.task.response.input.LoginRequest;
 import com.dim.task.response.input.RegisterRequest;
 import com.dim.task.response.output.TaskResponse;
+import com.dim.task.response.output.ValidationResponseError;
 import com.dim.task.response.output.GlobalResponseError;
 import com.dim.task.response.output.JwtResponse;
 import com.dim.task.response.output.UserDTO;
@@ -37,7 +38,9 @@ public class AuthController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Authentification réussie",
             content = @Content(schema = @Schema(implementation = JwtResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Mot de passe incorrect",
+        @ApiResponse(responseCode = "400", description = "Requête invalide",
+        	content = @Content(schema = @Schema(implementation = ValidationResponseError.class))),
+        @ApiResponse(responseCode = "404", description = "Mot de passe incorrect",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
@@ -56,7 +59,7 @@ public class AuthController {
         @ApiResponse(responseCode = "201", description = "Création réussie",
             content = @Content(schema = @Schema(implementation = TaskResponse.class))),
         @ApiResponse(responseCode = "400", description = "Requête invalide",
-            content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+            content = @Content(schema = @Schema(implementation = ValidationResponseError.class))),
         @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé",

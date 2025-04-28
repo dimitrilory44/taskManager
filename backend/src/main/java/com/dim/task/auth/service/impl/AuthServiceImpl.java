@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
 		}
 		
 		log.info("Connexion réussie pour l'utilisateur : {}", email);
-		return jwtService.generateToken(email, userPresent.getRole());
+		return jwtService.generateToken(email, userPresent.getRole().toString());
 	}
 		
 }
