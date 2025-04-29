@@ -1,8 +1,8 @@
-package com.dim.task.service;
+package com.dim.task.user.service;
 
 import java.util.List;
 
-import com.dim.task.response.output.UserDTO;
+import com.dim.task.user.response.output.UserDTO;
 
 public interface UserService {
 	List<UserDTO> getAllUsers();

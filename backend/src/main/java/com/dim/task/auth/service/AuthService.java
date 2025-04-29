@@ -1,7 +1,7 @@
 package com.dim.task.auth.service;
 
-import com.dim.task.response.input.RegisterRequest;
-import com.dim.task.response.output.UserDTO;
+import com.dim.task.auth.response.input.RegisterRequest;
+import com.dim.task.user.response.output.UserDTO;
 
 /**
  * Interface définissant les opérations liées à l'authentification et à l'inscription des utilisateurs.

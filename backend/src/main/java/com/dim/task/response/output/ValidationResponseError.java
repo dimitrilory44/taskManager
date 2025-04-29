@@ -25,4 +25,5 @@ public record ValidationResponseError(
     
     @Schema(description = "Code HTTP associé à l'erreur", example = "400")
     int status
+    
 ) {}

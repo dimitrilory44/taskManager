@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.dim.task.auth.exception.AccessDeniedException;
+import com.dim.task.auth.exception.EmailAlreadyUsedException;
+import com.dim.task.auth.exception.InvalidCredentialsException;
+import com.dim.task.auth.exception.UnAuthorizedException;
+import com.dim.task.auth.exception.UserNameAlreadyUsedException;
+import com.dim.task.auth.exception.UserNotFoundException;
+
 import jakarta.annotation.Nullable;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;

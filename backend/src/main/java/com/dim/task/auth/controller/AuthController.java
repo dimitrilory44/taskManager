@@ -4,14 +4,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.dim.task.auth.response.input.LoginRequest;
+import com.dim.task.auth.response.input.RegisterRequest;
+import com.dim.task.auth.response.output.JwtResponse;
 import com.dim.task.auth.service.AuthService;
-import com.dim.task.response.input.LoginRequest;
-import com.dim.task.response.input.RegisterRequest;
 import com.dim.task.response.output.TaskResponse;
 import com.dim.task.response.output.ValidationResponseError;
+import com.dim.task.user.response.output.UserDTO;
 import com.dim.task.response.output.GlobalResponseError;
-import com.dim.task.response.output.JwtResponse;
-import com.dim.task.response.output.UserDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,8 +48,8 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
     })
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        log.info("Tentative de connexion pour l'utilisateur : {}", loginRequest.getEmail());
-        String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        log.info("Tentative de connexion pour l'utilisateur : {}", loginRequest.email());
+        String token = authService.login(loginRequest.email(), loginRequest.password());
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
@@ -67,9 +67,9 @@ public class AuthController {
         @ApiResponse(responseCode = "500", description = "Erreur technique",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
     })
-    public ResponseEntity<TaskResponse<UserDTO>> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        log.info("Tentative de création de l'utilisateur avec l'email : {}", registerRequest.getEmail());
-        UserDTO user = authService.register(registerRequest);
+    public ResponseEntity<TaskResponse<UserDTO>> register(@Valid @RequestBody RegisterRequest register) {
+        log.info("Tentative de création de l'utilisateur avec l'email : {}", register.email());
+        UserDTO user = authService.register(register);
         return ResponseEntity.status(HttpStatus.CREATED).body(new TaskResponse<>("Utilisateur inscrit avec succès", user));
     }
     

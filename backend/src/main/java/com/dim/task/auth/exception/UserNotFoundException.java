@@ -1,4 +1,4 @@
-package com.dim.task.exception;
+package com.dim.task.auth.exception;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;

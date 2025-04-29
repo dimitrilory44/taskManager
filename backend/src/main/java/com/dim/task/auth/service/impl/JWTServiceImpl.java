@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.dim.task.auth.JWTProperties;
 import com.dim.task.auth.service.JWTService;
-import com.dim.task.model.Role;
+import com.dim.task.user.model.Role;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

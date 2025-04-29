@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.dim.task.model.Role;
+import com.dim.task.user.model.Role;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

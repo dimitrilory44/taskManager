@@ -1,4 +1,4 @@
-package com.dim.task.repository;
+package com.dim.task.user.repository;
 
 import java.util.Optional;
 

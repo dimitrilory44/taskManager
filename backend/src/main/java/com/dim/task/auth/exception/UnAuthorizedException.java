@@ -1,4 +1,4 @@
-package com.dim.task.exception;
+package com.dim.task.auth.exception;
 
 public class UnAuthorizedException extends RuntimeException {
 

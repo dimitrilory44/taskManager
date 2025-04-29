@@ -3,17 +3,17 @@ package com.dim.task.auth.service.impl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dim.task.auth.exception.EmailAlreadyUsedException;
+import com.dim.task.auth.exception.InvalidCredentialsException;
+import com.dim.task.auth.exception.UserNameAlreadyUsedException;
+import com.dim.task.auth.exception.UserNotFoundException;
+import com.dim.task.auth.response.input.RegisterRequest;
 import com.dim.task.auth.service.AuthService;
 import com.dim.task.auth.service.JWTService;
 import com.dim.task.entities.Users;
-import com.dim.task.exception.EmailAlreadyUsedException;
-import com.dim.task.exception.InvalidCredentialsException;
-import com.dim.task.exception.UserNameAlreadyUsedException;
-import com.dim.task.exception.UserNotFoundException;
-import com.dim.task.mapper.UserMapper;
-import com.dim.task.repository.UserRepository;
-import com.dim.task.response.input.RegisterRequest;
-import com.dim.task.response.output.UserDTO;
+import com.dim.task.user.mapper.UserMapper;
+import com.dim.task.user.repository.UserRepository;
+import com.dim.task.user.response.output.UserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,21 +45,23 @@ public class AuthServiceImpl implements AuthService {
 	 * @throws EmailAlreadyUsedException si un utilisateur existe déjà avec cet email.
 	 */
 	@Override
-	public UserDTO register(RegisterRequest register) {
-		userRepository.findByEmail(register.getEmail())
+	public UserDTO register(RegisterRequest rawRegister) {
+		userRepository.findByEmail(rawRegister.email())
 			.ifPresent(user -> {
-				log.warn("Création échouée - email déjà utilisé : {}", register.getEmail());
+				log.warn("Création échouée - email déjà utilisé : {}", rawRegister.email());
 				throw new EmailAlreadyUsedException("Email déjà utilisé"); 
 			});
 		
-		userRepository.findByUserName(register.getUserName())
+		userRepository.findByUserName(rawRegister.userName())
 			.ifPresent(user -> {
-				log.warn("Création échouée - userName déjà utilisé : {}", register.getUserName());
+				log.warn("Création échouée - userName déjà utilisé : {}", rawRegister.userName());
 				throw new UserNameAlreadyUsedException("UserName déjà utilisé"); 
 			});
 		
-		register.setPassword(passwordEncoder.encode(register.getPassword()));
-				
+		String encodedPassword = passwordEncoder.encode(rawRegister.password());
+		
+		RegisterRequest register = new RegisterRequest(rawRegister.userName(), rawRegister.name(), rawRegister.firstName(), rawRegister.email(), encodedPassword);
+						
 		Users userSaved = userRepository.save(userMapper.toUser(register));
 		
 		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());

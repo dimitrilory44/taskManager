@@ -1,15 +1,15 @@
-package com.dim.task.service.impl;
+package com.dim.task.user.service.impl;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dim.task.auth.exception.UserNotFoundException;
 import com.dim.task.entities.Users;
-import com.dim.task.exception.UserNotFoundException;
-import com.dim.task.mapper.UserMapper;
-import com.dim.task.repository.UserRepository;
-import com.dim.task.response.output.UserDTO;
-import com.dim.task.service.UserService;
+import com.dim.task.user.mapper.UserMapper;
+import com.dim.task.user.repository.UserRepository;
+import com.dim.task.user.response.output.UserDTO;
+import com.dim.task.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

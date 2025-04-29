@@ -1,4 +1,4 @@
-package com.dim.task.controller;
+package com.dim.task.user.controller;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dim.task.response.output.GlobalResponseError;
 import com.dim.task.response.output.TaskResponse;
-import com.dim.task.response.output.UserDTO;
-import com.dim.task.service.UserService;
+import com.dim.task.user.response.output.UserDTO;
+import com.dim.task.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

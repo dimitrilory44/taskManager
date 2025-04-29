@@ -3,6 +3,8 @@ package com.dim.task.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import com.dim.task.user.AdminUser;
+
 import lombok.Data;
 
 @Data

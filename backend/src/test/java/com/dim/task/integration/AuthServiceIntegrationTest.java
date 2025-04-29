@@ -6,16 +6,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.dim.task.auth.exception.EmailAlreadyUsedException;
+import com.dim.task.auth.exception.InvalidCredentialsException;
+import com.dim.task.auth.exception.UserNotFoundException;
+import com.dim.task.auth.response.input.LoginRequest;
+import com.dim.task.auth.response.input.RegisterRequest;
 import com.dim.task.auth.service.AuthService;
 import com.dim.task.entities.Users;
-import com.dim.task.exception.EmailAlreadyUsedException;
-import com.dim.task.exception.InvalidCredentialsException;
-import com.dim.task.exception.UserNotFoundException;
-import com.dim.task.model.Role;
-import com.dim.task.repository.UserRepository;
-import com.dim.task.response.input.LoginRequest;
-import com.dim.task.response.input.RegisterRequest;
-import com.dim.task.response.output.UserDTO;
+import com.dim.task.user.model.Role;
+import com.dim.task.user.repository.UserRepository;
+import com.dim.task.user.response.output.UserDTO;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -58,7 +58,7 @@ class AuthServiceIntegrationTest {
         // Then
         Users user = userRepository.findByEmail("email@example.com").orElseThrow();
 
-        assertEquals(user.getEmail(), userDTO.getEmail());
+        assertEquals(user.getEmail(), userDTO.email());
         assertTrue(passwordEncoder.matches("password", user.getPassword()));
     }
     

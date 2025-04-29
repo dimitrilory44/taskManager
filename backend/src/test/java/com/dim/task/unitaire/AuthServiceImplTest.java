@@ -16,18 +16,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.dim.task.auth.exception.EmailAlreadyUsedException;
+import com.dim.task.auth.exception.InvalidCredentialsException;
+import com.dim.task.auth.exception.UserNotFoundException;
+import com.dim.task.auth.response.input.LoginRequest;
+import com.dim.task.auth.response.input.RegisterRequest;
 import com.dim.task.auth.service.JWTService;
 import com.dim.task.auth.service.impl.AuthServiceImpl;
 import com.dim.task.entities.Users;
-import com.dim.task.exception.EmailAlreadyUsedException;
-import com.dim.task.exception.InvalidCredentialsException;
-import com.dim.task.exception.UserNotFoundException;
-import com.dim.task.mapper.UserMapper;
-import com.dim.task.model.Role;
-import com.dim.task.repository.UserRepository;
-import com.dim.task.response.input.LoginRequest;
-import com.dim.task.response.input.RegisterRequest;
-import com.dim.task.response.output.UserDTO;
+import com.dim.task.user.mapper.UserMapper;
+import com.dim.task.user.model.Role;
+import com.dim.task.user.repository.UserRepository;
+import com.dim.task.user.response.output.UserDTO;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -71,14 +71,13 @@ class AuthServiceImplTest {
 		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
 		Users user = new Users();
-		user.setEmail(request.getEmail());
+		user.setEmail(request.email());
 		user.setPassword("encoded-password");
 
-		UserDTO userDTO = new UserDTO();
-		userDTO.setEmail(request.getEmail());
+		UserDTO userDTO = new UserDTO(1L, "Alice", "", "", request.email());
 
-		when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
-		when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
+		when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
+		when(passwordEncoder.encode(request.password())).thenReturn("encoded-password");
 		when(userMapper.toUser(request)).thenReturn(user);
 		when(userRepository.save(user)).thenReturn(user);
 		when(userMapper.toUserDTO(user)).thenReturn(userDTO);
@@ -88,7 +87,7 @@ class AuthServiceImplTest {
 
 		// Assert
 		assertNotNull(result);
-		assertEquals("dim@example.com", result.getEmail());
+		assertEquals("dim@example.com", result.email());
 		verify(userRepository).save(user);
 	}
 

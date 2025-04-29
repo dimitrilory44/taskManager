@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.dim.task.config.ApiProperties;
 import com.dim.task.entities.Users;
-import com.dim.task.model.Role;
-import com.dim.task.repository.UserRepository;
+import com.dim.task.user.model.Role;
+import com.dim.task.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

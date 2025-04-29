@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.dim.task.entities.Users;
-import com.dim.task.repository.UserRepository;
+import com.dim.task.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
