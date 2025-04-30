@@ -1,6 +1,8 @@
 package com.dim.taskmanager.exception;
 
-public class UserNameAlreadyUsedException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public final class UserNameAlreadyUsedException extends AuthException {
 
 	/**
 	 * 
@@ -9,6 +11,11 @@ public class UserNameAlreadyUsedException extends RuntimeException {
 	
 	public UserNameAlreadyUsedException(String message) {
 		super(message);
+	}
+
+	@Override
+	public HttpStatus getHttpStatus() {
+		return HttpStatus.CONFLICT;
 	}
 
 }

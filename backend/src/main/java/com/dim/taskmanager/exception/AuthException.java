@@ -3,7 +3,7 @@ package com.dim.taskmanager.exception;
 import org.springframework.http.HttpStatus;
 
 public sealed abstract class AuthException extends RuntimeException 
-	permits EmailAlreadyUsedException, InvalidCredentialsException, 
+	permits EmailAlreadyUsedException, InvalidCredentialsException, UserNameAlreadyUsedException,
 			UserNotFoundException, UnAuthorizedException, AccessDeniedException {
 
 	/**
