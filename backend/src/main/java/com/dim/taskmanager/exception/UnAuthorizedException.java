@@ -1,6 +1,8 @@
 package com.dim.taskmanager.exception;
 
-public class UnAuthorizedException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public final class UnAuthorizedException extends AuthException {
 
 	/**
 	 * 
@@ -9,5 +11,10 @@ public class UnAuthorizedException extends RuntimeException {
 
 	public UnAuthorizedException(String message) {
 		super(message);
+	}
+
+	@Override
+	public HttpStatus getHttpStatus() {
+		return HttpStatus.UNAUTHORIZED;
 	}
 }

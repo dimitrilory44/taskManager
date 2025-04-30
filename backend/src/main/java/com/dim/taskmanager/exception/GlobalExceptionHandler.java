@@ -26,25 +26,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 public class GlobalExceptionHandler {
 
 	/**
-	 * Gère l'exception {@link EmailAlreadyUsedException} lorsque l'email est déjà enregistré.
-	 *
-	 * @param ex l'exception levée contenant le message d'erreur
-	 * @return une réponse HTTP 400 (Bad Request) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(EmailAlreadyUsedException.class)
-	public ResponseEntity<Object> handleEmailAlreadyUsed(EmailAlreadyUsedException ex) {
-		return buildResponse(HttpStatus.CONFLICT, "Le compte existe déjà avec l'email fourni", ex.getMessage(), null);
-	}
-
-	/**
-	 * Gère l'exception {@link UserNameAlreadyUsedException} lorsque le userName est déjà enregistré.
-	 *
-	 * @param ex l'exception levée contenant le message d'erreur
-	 * @return une réponse HTTP 400 (Bad Request) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(UserNameAlreadyUsedException.class)
-	public ResponseEntity<Object> handleUserNameAlreadyUsed(UserNameAlreadyUsedException ex) {
-		return buildResponse(HttpStatus.CONFLICT, "Le compte existe déjà avec le username fourni", ex.getMessage(), null);
+     * Intercepte toutes les exceptions de type AuthException (scellée avec ses sous-types comme EmailAlreadyUsedException...).
+     * Cela permet de mutualiser le traitement d'exceptions métier liées à l'authentification/autorisation.
+     *
+     * Chaque sous-classe d'AuthException doit fournir un HttpStatus spécifique via getHttpStatus().
+     */
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity<Object> handleAuthException(AuthException ex) {
+	    return buildResponse(ex.getHttpStatus(), "Erreur d'authentification", ex.getMessage(), null);
 	}
 
 	/**
@@ -69,6 +58,11 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.BAD_REQUEST, "Type de paramètre incorrect", ex.getMessage(), null);
 	}
 
+	/**
+     * Gère les erreurs de validation liées aux annotations de type @Valid dans les DTOs.
+     * 
+     * Regroupe les erreurs de champ sous une clé "fieldErrors" dans la réponse JSON.
+     */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {    
 		Map<String, Object> fieldErrors = Map.of("fieldErrors", ex.getBindingResult().getFieldErrors().stream()
@@ -79,50 +73,6 @@ public class GlobalExceptionHandler {
 						)));
 
 		return buildResponse(HttpStatus.BAD_REQUEST, "Erreur de validation", "Des champs requis sont manquants ou invalides.", fieldErrors);
-	}
-
-	/**
-	 * Gère les exceptions d'authentification (par exemple, un utilisateur non authentifié).
-	 *
-	 * @param ex l'exception levée
-	 * @return une réponse HTTP 401 (Unauthorized) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(UnAuthorizedException.class)
-	public ResponseEntity<Object> handleUnauthorized(UnAuthorizedException ex) {
-		return buildResponse(HttpStatus.UNAUTHORIZED, "Il faut pour cela être identifié pour y avoir accès", ex.getMessage(), null);
-	}
-
-	/**
-	 * Gère l'exception {@link InvalidCredentialsException} lorsque les informations d'identification sont incorrectes.
-	 *
-	 * @param ex l'exception levée
-	 * @return une réponse HTTP 401 (Unauthorized) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(InvalidCredentialsException.class)
-	public ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex) {
-		return buildResponse(HttpStatus.UNAUTHORIZED, "Le mot de passe ne correspond pas à celui existant en base", ex.getMessage(), null);
-	}
-
-	/**
-	 * Gère les erreurs d'accès interdit (l'utilisateur n'a pas les autorisations nécessaires).
-	 *
-	 * @param ex l'exception levée
-	 * @return une réponse HTTP 403 (Forbidden) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<Object> handleForbidden(AccessDeniedException ex) {
-		return buildResponse(HttpStatus.FORBIDDEN, "Vous n'avez pas accès à la ressource", ex.getMessage(), null);
-	}
-
-	/**
-	 * Gère l'exception {@link UserNotFoundException} lorsqu'aucun utilisateur n'est trouvé.
-	 *
-	 * @param ex l'exception levée contenant le message d'erreur
-	 * @return une réponse HTTP 404 (Not Found) contenant les détails de l'erreur
-	 */
-	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex) {
-		return buildResponse(HttpStatus.NOT_FOUND, "Aucun compte ne correspond à l'email fourni.", ex.getMessage(), null);
 	}
 
 	/**
@@ -149,14 +99,15 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * Construire une réponse structurée pour l'API avec les détails de l'erreur.
-	 *
-	 * @param status le code HTTP associé à l'erreur
-	 * @param error le message d'erreur global
-	 * @param message le message détaillé sur l'erreur
-	 * @param fieldErrors des erreurs de validation par champ (peut être null)
-	 * @return une réponse HTTP contenant les détails de l'erreur
-	 */
+     * Méthode utilitaire utilisée par tous les gestionnaires pour construire une réponse JSON structurée.
+     *
+     * @param status       Le code HTTP à retourner.
+     * @param error        Le résumé de l’erreur (ex: "Erreur de validation").
+     * @param message      Le message détaillé (souvent issu de l'exception).
+     * @param fieldErrors  Une map contenant les erreurs de validation (peut être null).
+     *
+     * @return             Une réponse HTTP complète contenant les informations d'erreur.
+     */
 	private ResponseEntity<Object> buildResponse(HttpStatus status, String error, String message, @Nullable Map<String, ?> fieldErrors) {
 		Map<String, Object> bodyError = new HashMap<>();
 		bodyError.put("timestamp", LocalDateTime.now());

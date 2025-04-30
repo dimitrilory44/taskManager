@@ -1,6 +1,8 @@
 package com.dim.taskmanager.exception;
 
-public class AccessDeniedException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public final class AccessDeniedException extends AuthException {
 
 	/**
 	 * 
@@ -9,5 +11,10 @@ public class AccessDeniedException extends RuntimeException {
 
 	public AccessDeniedException(String message) {
 		super(message);
+	}
+
+	@Override
+	public HttpStatus getHttpStatus() {
+		return HttpStatus.FORBIDDEN;
 	}
 }

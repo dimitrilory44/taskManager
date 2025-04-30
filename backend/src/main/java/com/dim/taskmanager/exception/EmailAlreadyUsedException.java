@@ -1,6 +1,5 @@
 package com.dim.taskmanager.exception;
 
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -9,8 +8,7 @@ import org.springframework.http.HttpStatus;
  * Cette classe hérite de RuntimeException afin de permettre une gestion souple via un ControllerAdvice.
  * Le constructeur permet de définir un message d'erreur personnalisé.
  */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class EmailAlreadyUsedException extends RuntimeException {
+public final class EmailAlreadyUsedException extends AuthException {
 	
 	/**
 	 * 
@@ -25,4 +23,10 @@ public class EmailAlreadyUsedException extends RuntimeException {
 	public EmailAlreadyUsedException(String message) {
 		super(message);
 	}
+
+	@Override
+	public HttpStatus getHttpStatus() {
+		return HttpStatus.CONFLICT;
+	}
+	
 }
