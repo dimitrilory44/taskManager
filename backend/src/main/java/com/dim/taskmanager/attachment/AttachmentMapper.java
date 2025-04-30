@@ -1,16 +1,11 @@
 package com.dim.taskmanager.attachment;
 
-import java.util.List;
-
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-import com.dim.taskmanager.response.output.AttachmentDTO;
+import com.dim.taskmanager.mapper.TaskManagerMapper;
 
-@Mapper(componentModel = "spring")
-public interface AttachmentMapper {
-	
-	AttachmentDTO toAttachmentDTO(AttachmentEntity attachment);
-	
-	List<AttachmentDTO> toAttachmentListDTO(List<AttachmentEntity> attachments);
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface AttachmentMapper extends TaskManagerMapper<AttachmentDTO, AttachmentEntity> {
 
 }

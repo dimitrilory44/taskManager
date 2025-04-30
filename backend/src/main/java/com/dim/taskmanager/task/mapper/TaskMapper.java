@@ -1,7 +1,5 @@
 package com.dim.taskmanager.task.mapper;
 
-import java.util.List;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -21,6 +19,5 @@ import com.dim.taskmanager.task.response.output.TaskDTO;
 )
 public interface TaskMapper extends TaskManagerMapper<TaskDTO, TaskEntity> {
 		
-	List<TaskDTO> toTaskListDTO(List<TaskEntity> task);
 	
 }

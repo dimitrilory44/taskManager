@@ -62,10 +62,10 @@ public class AuthServiceImpl implements AuthService {
 		
 		RegisterRequest register = new RegisterRequest(rawRegister.userName(), rawRegister.name(), rawRegister.firstName(), rawRegister.email(), encodedPassword);
 		
-		UserEntity userSaved = userRepository.save(userMapper.toUser(register));
+		UserEntity userSaved = userRepository.save(userMapper.toEntity(register));
 		
 		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
-		return userMapper.toUserDTO(userSaved);
+		return userMapper.toDTO(userSaved);
 	}
 
 	/**

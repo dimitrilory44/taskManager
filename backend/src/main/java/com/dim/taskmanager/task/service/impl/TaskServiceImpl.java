@@ -25,7 +25,7 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public List<TaskDTO> getAllTask() {
 		List<TaskEntity> tasks = taskRepository.findAll();
-		return taskMapper.toTaskListDTO(tasks);
+		return taskMapper.toDTOList(tasks);
 	}
 
 	@Override

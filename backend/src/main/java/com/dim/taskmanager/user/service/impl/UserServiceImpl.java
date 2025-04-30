@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> 
 					new UserNotFoundException("Utilisateur non trouvé pour l'ID : " + id)
 				);
-		return userMapper.toUserDTO(user);
+		return userMapper.toDTO(user);
 	}
 
 	@Override

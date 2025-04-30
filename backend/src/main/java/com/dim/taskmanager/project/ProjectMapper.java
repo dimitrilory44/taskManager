@@ -1,12 +1,12 @@
 package com.dim.taskmanager.project;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-import com.dim.taskmanager.response.output.ProjectDTO;
+import com.dim.taskmanager.mapper.TaskManagerMapper;
 
-@Mapper(componentModel = "spring")
-public interface ProjectMapper {
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface ProjectMapper extends TaskManagerMapper<ProjectDTO, ProjectEntity> {
 		
-	ProjectDTO toProjectDTO(ProjectEntity project);
 	
 }
