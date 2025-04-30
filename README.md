@@ -1,5 +1,7 @@
 # taskManager
 
+Architecture modulaire par domaine (feature-based)
+
 ## Technologies
 - Java 21
 - Spring Boot 3.4.4
