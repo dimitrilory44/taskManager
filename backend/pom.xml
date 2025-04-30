@@ -13,9 +13,9 @@
     </parent>
 
     <groupId>com.dim</groupId>
-    <artifactId>task</artifactId>
+    <artifactId>taskmanager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>task</name>
+    <name>taskmanager</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
