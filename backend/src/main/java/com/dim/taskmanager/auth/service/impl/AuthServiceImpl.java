@@ -3,13 +3,13 @@ package com.dim.taskmanager.auth.service.impl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dim.taskmanager.auth.exception.EmailAlreadyUsedException;
+import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
+import com.dim.taskmanager.auth.exception.UserNameAlreadyUsedException;
+import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
 import com.dim.taskmanager.auth.service.AuthService;
 import com.dim.taskmanager.auth.service.JWTService;
-import com.dim.taskmanager.exception.EmailAlreadyUsedException;
-import com.dim.taskmanager.exception.InvalidCredentialsException;
-import com.dim.taskmanager.exception.UserNameAlreadyUsedException;
-import com.dim.taskmanager.exception.UserNotFoundException;
 import com.dim.taskmanager.user.entity.UserEntity;
 import com.dim.taskmanager.user.mapper.UserMapper;
 import com.dim.taskmanager.user.repository.UserRepository;

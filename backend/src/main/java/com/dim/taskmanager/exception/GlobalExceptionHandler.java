@@ -1,18 +1,12 @@
 package com.dim.taskmanager.exception;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.dim.taskmanager.config.ErrorMessages;
+import com.dim.taskmanager.auth.exception.AuthException;
+import com.dim.taskmanager.auth.exception.error.AuthError;
 import com.dim.taskmanager.exception.error.*;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,7 +28,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<Object> handleAuthException(AuthException ex) {
-		return buildResponse(new AuthError(ex));
+		AuthError error = new AuthError(ex);
+		return error.buildResponse();
 	}
 
 	/**
@@ -45,7 +40,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> handleBadRequest(IllegalArgumentException ex) {
-		return buildResponse(new GenericError(HttpStatus.BAD_REQUEST, ex.getMessage(), ErrorMessages.get("illegal.error")));
+		GenericError error = new GenericError(ex);
+		return error.buildResponse();
 	}
 
 	/**
@@ -56,7 +52,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-		return buildResponse(new TypeMismatchError(ex));
+		TypeMismatchError error = new TypeMismatchError(ex);
+		return error.buildResponse();
 	}
 
 	/**
@@ -66,9 +63,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {    
-		Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
-				.collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (e1, e2) -> e1));
-		return buildResponse(new ValidationError(fieldErrors));
+		ValidationError error = new ValidationError(ex);
+		return error.buildResponse();
 	}
 
 	/**
@@ -80,7 +76,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleGeneric(Exception ex) {
-		return buildResponse(new GenericError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ErrorMessages.get("internal.error")));
+		GenericError error = new GenericError(ex);
+		return error.buildResponse();
 	}
 
 	/**
@@ -91,23 +88,8 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(TechnicalException.class)
 	public ResponseEntity<Object> handleTechnicalException(TechnicalException ex) {
-		return buildResponse(new TechnicalError(ex));
+		TechnicalError error = new TechnicalError(ex);
+		return error.buildResponse();
 	}
 
-	/**
-	 * Méthode utilitaire utilisée par tous les gestionnaires pour construire une réponse JSON structurée.
-	 *
-	 * @param error       La class ApiError avec les spécificité de cette error à paramétrer
-	 *
-	 * @return             Une réponse HTTP complète contenant les informations d'erreur.
-	 */
-	private ResponseEntity<Object> buildResponse(ApiError error) {
-		Map<String, Object> bodyError = new HashMap<>();
-		bodyError.put("timestamp", LocalDateTime.now());
-		bodyError.put("status", error.getStatus().value());
-		bodyError.put("message", error.getMessage());
-		bodyError.put("error", error.getError());
-		if (error.getDetails() != null) bodyError.putAll(error.getDetails());
-		return new ResponseEntity<>(bodyError, error.getStatus());
-	}
 }

@@ -1,38 +1,21 @@
 package com.dim.taskmanager.exception.error;
 
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
+
+import com.dim.taskmanager.config.ErrorMessages;
 
 public record GenericError(
 		HttpStatus status,
 		String message,
-		String error,
-		Map<String, ?> details
+		String error
 ) implements ApiError {
-
-	public GenericError(HttpStatus status, String message, String error) {
-        this(status, message, error, null);
+	
+	public GenericError(Exception ex) {
+		this(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ErrorMessages.get("internal.error"));
     }
 	
-	@Override
-	public HttpStatus getStatus() {
-		return status;
-	}
-
-	@Override
-	public String getMessage() {
-		return message;
-	}
-
-	@Override
-	public String getError() {
-		return error;
-	}
-
-	@Override
-	public Map<String, ?> getDetails() {
-		return details;
+	public GenericError(IllegalArgumentException ex) {
+		this(HttpStatus.BAD_REQUEST, ex.getMessage(), ErrorMessages.get("illegal.error"));
 	}
 
 }

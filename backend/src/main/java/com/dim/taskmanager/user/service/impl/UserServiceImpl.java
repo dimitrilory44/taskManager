@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.dim.taskmanager.exception.UserNotFoundException;
+import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.user.entity.UserEntity;
 import com.dim.taskmanager.user.mapper.UserMapper;
 import com.dim.taskmanager.user.model.Role;

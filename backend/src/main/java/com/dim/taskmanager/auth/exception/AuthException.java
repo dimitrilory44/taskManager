@@ -1,4 +1,4 @@
-package com.dim.taskmanager.exception;
+package com.dim.taskmanager.auth.exception;
 
 import org.springframework.http.HttpStatus;
 

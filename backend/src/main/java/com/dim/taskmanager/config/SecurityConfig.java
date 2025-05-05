@@ -11,8 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dim.taskmanager.auth.JwtAuthenticationFilter;
-import com.dim.taskmanager.exception.CustomAccessDeniedHandler;
-import com.dim.taskmanager.exception.CustomAuthenticationEntryPoint;
+import com.dim.taskmanager.security.CustomAccessDeniedHandler;
+import com.dim.taskmanager.security.CustomAuthenticationEntryPoint;
 
 import lombok.RequiredArgsConstructor;
 

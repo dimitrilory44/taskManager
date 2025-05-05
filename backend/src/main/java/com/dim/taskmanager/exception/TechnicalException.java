@@ -1,6 +1,6 @@
 package com.dim.taskmanager.exception;
 
-public class TechnicalException extends RuntimeException {
+public abstract class TechnicalException extends RuntimeException {
 	
 	/**
 	 * 
