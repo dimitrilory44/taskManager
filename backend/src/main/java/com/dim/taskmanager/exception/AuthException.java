@@ -16,4 +16,6 @@ public sealed abstract class AuthException extends RuntimeException
 	}
 	
 	public abstract HttpStatus getHttpStatus();
+	
+	public abstract String getErrorMessage();
 }

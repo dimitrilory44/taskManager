@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import jakarta.annotation.Nullable;
+import com.dim.taskmanager.config.ErrorMessages;
+import com.dim.taskmanager.exception.error.*;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -26,35 +27,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 public class GlobalExceptionHandler {
 
 	/**
-     * Intercepte toutes les exceptions de type AuthException (scellée avec ses sous-types comme EmailAlreadyUsedException...).
-     * Cela permet de mutualiser le traitement d'exceptions métier liées à l'authentification/autorisation.
-     *
-     * Chaque sous-classe d'AuthException doit fournir un HttpStatus spécifique via getHttpStatus().
-     */
+	 * Intercepte toutes les exceptions de type AuthException (scellée avec ses sous-types comme EmailAlreadyUsedException...).
+	 * Cela permet de mutualiser le traitement d'exceptions métier liées à l'authentification/autorisation.
+	 *
+	 * Chaque sous-classe d'AuthException doit fournir un HttpStatus spécifique via getHttpStatus().
+	 */
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<Object> handleAuthException(AuthException ex) {
-		String errorMessage = resolveErrorMessage(ex);
-	    return buildResponse(ex.getHttpStatus(), ex.getMessage(), errorMessage, null);
+		return buildResponse(new AuthError(ex));
 	}
-	
-	/**
-     * Méthode pour résoudre le message d'erreur en fonction du type d'exception AuthException.
-     * Elle permet de centraliser et de simplifier la gestion des messages d'erreur.
-     *
-     * @param ex l'exception levée
-     * @return un message d'erreur spécifique à l'exception
-     */
-    private String resolveErrorMessage(AuthException ex) {
-        return switch (ex) {
-            case EmailAlreadyUsedException e -> "Le compte existe déjà avec l'email fourni";
-            case InvalidCredentialsException e -> "Le mot de passe ne correspond pas à celui existant en base";
-            case UserNameAlreadyUsedException e -> "Le compte existe déjà avec le username fourni";
-            case UserNotFoundException e -> "Aucun compte ne correspond à l'email fourni.";
-            case UnAuthorizedException e -> "Il faut pour cela être identifié pour y avoir accès";
-            case AccessDeniedException e -> "Vous n'avez pas accès à la ressource";
-            default -> "Erreur d'authentification";
-        };
-    }
 
 	/**
 	 * Gère les erreurs liées à une requête invalide (par exemple, un paramètre manquant ou mal formaté).
@@ -64,7 +45,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> handleBadRequest(IllegalArgumentException ex) {
-		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Requête invalide", null);
+		return buildResponse(new GenericError(HttpStatus.BAD_REQUEST, ex.getMessage(), ErrorMessages.get("illegal.error")));
 	}
 
 	/**
@@ -75,24 +56,19 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Type de paramètre incorrect", null);
+		return buildResponse(new TypeMismatchError(ex));
 	}
 
 	/**
-     * Gère les erreurs de validation liées aux annotations de type @Valid dans les DTOs.
-     * 
-     * Regroupe les erreurs de champ sous une clé "fieldErrors" dans la réponse JSON.
-     */
+	 * Gère les erreurs de validation liées aux annotations de type @Valid dans les DTOs.
+	 * 
+	 * Regroupe les erreurs de champ sous une clé "fieldErrors" dans la réponse JSON.
+	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {    
-		Map<String, Object> fieldErrors = Map.of("fieldErrors", ex.getBindingResult().getFieldErrors().stream()
-				.collect(Collectors.toMap(
-						FieldError::getField, 
-						FieldError::getDefaultMessage,
-						(existing, replacement) -> existing  // en cas de doublon, garde le premier
-						)));
-
-		return buildResponse(HttpStatus.BAD_REQUEST, "Des champs requis sont manquants ou invalides.", "Erreur de validation", fieldErrors);
+		Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+				.collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (e1, e2) -> e1));
+		return buildResponse(new ValidationError(fieldErrors));
 	}
 
 	/**
@@ -104,7 +80,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleGeneric(Exception ex) {
-		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "Un problème interne est survenu. Veuillez réessayer plus tard.", null);
+		return buildResponse(new GenericError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ErrorMessages.get("internal.error")));
 	}
 
 	/**
@@ -115,26 +91,23 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(TechnicalException.class)
 	public ResponseEntity<Object> handleTechnicalException(TechnicalException ex) {
-		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "Une erreur technique est survenue. Veuillez réessayer plus tard.", null);
+		return buildResponse(new TechnicalError(ex));
 	}
 
 	/**
-     * Méthode utilitaire utilisée par tous les gestionnaires pour construire une réponse JSON structurée.
-     *
-     * @param status       Le code HTTP à retourner.
-     * @param error        Le résumé de l’erreur (ex: "Erreur de validation").
-     * @param message      Le message détaillé (souvent issu de l'exception).
-     * @param fieldErrors  Une map contenant les erreurs de validation (peut être null).
-     *
-     * @return             Une réponse HTTP complète contenant les informations d'erreur.
-     */
-	private ResponseEntity<Object> buildResponse(HttpStatus status, String message, String error, @Nullable Map<String, ?> fieldErrors) {
+	 * Méthode utilitaire utilisée par tous les gestionnaires pour construire une réponse JSON structurée.
+	 *
+	 * @param error       La class ApiError avec les spécificité de cette error à paramétrer
+	 *
+	 * @return             Une réponse HTTP complète contenant les informations d'erreur.
+	 */
+	private ResponseEntity<Object> buildResponse(ApiError error) {
 		Map<String, Object> bodyError = new HashMap<>();
 		bodyError.put("timestamp", LocalDateTime.now());
-		bodyError.put("status", status.value());
-		bodyError.put("message", message);
-		bodyError.put("error", error);
-		if (fieldErrors != null) bodyError.putAll(fieldErrors);
-		return new ResponseEntity<>(bodyError, status);
+		bodyError.put("status", error.getStatus().value());
+		bodyError.put("message", error.getMessage());
+		bodyError.put("error", error.getError());
+		if (error.getDetails() != null) bodyError.putAll(error.getDetails());
+		return new ResponseEntity<>(bodyError, error.getStatus());
 	}
 }
