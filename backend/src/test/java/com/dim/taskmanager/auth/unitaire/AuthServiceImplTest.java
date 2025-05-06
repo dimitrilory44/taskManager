@@ -1,4 +1,4 @@
-package com.dim.taskmanager.unitaire;
+package com.dim.taskmanager.auth.unitaire;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
@@ -19,15 +19,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.dim.taskmanager.auth.exception.EmailAlreadyUsedException;
 import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
 import com.dim.taskmanager.auth.exception.UserNotFoundException;
+import com.dim.taskmanager.auth.mapper.AuthMapper;
 import com.dim.taskmanager.auth.response.input.LoginRequest;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
+import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.auth.service.JWTService;
 import com.dim.taskmanager.auth.service.impl.AuthServiceImpl;
 import com.dim.taskmanager.user.entity.UserEntity;
-import com.dim.taskmanager.user.mapper.UserMapper;
 import com.dim.taskmanager.user.model.Role;
 import com.dim.taskmanager.user.repository.UserRepository;
-import com.dim.taskmanager.user.response.output.UserDTO;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -46,7 +46,7 @@ class AuthServiceImplTest {
 	private UserRepository userRepository;
 
 	@Mock
-	private UserMapper userMapper;
+	private AuthMapper authMapper;
 
 	@Mock
 	private PasswordEncoder passwordEncoder;
@@ -74,16 +74,16 @@ class AuthServiceImplTest {
 		user.setEmail(request.email());
 		user.setPassword("encoded-password");
 
-		UserDTO userDTO = new UserDTO(1L, "Alice", "", "", request.email());
+		AuthDTO userDTO = new AuthDTO(1L, "Alice", "", "", request.email());
 
 		when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
 		when(passwordEncoder.encode(request.password())).thenReturn("123456");
-		when(userMapper.toEntity(request)).thenReturn(user);
+		when(authMapper.toEntity(request)).thenReturn(user);
 		when(userRepository.save(user)).thenReturn(user);
-		when(userMapper.toDTO(user)).thenReturn(userDTO);
+		when(authMapper.toDTO(user)).thenReturn(userDTO);
 
 		// Act
-		UserDTO result = authService.register(request);
+		AuthDTO result = authService.register(request);
 
 		// Assert
 		assertNotNull(result);

@@ -4,12 +4,12 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dim.taskmanager.auth.response.input.LoginRequest;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
+import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.auth.response.output.JwtResponse;
 import com.dim.taskmanager.auth.service.AuthService;
 import com.dim.taskmanager.response.output.GlobalResponseError;
 import com.dim.taskmanager.response.output.GlobalResponse;
 import com.dim.taskmanager.response.output.ValidationResponseError;
-import com.dim.taskmanager.user.response.output.UserDTO;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,9 +68,9 @@ public class AuthController {
         @ApiResponse(responseCode = "500", description = "Erreur technique",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
     })
-    public ResponseEntity<GlobalResponse<UserDTO>> register(@Valid @RequestBody RegisterRequest register) {
+    public ResponseEntity<GlobalResponse<AuthDTO>> register(@Valid @RequestBody RegisterRequest register) {
         log.info("Tentative de création de l'utilisateur avec l'email : {}", register.email());
-        UserDTO user = authService.register(register);
+        AuthDTO user = authService.register(register);
         return ResponseEntity.status(HttpStatus.CREATED).body(new GlobalResponse<>("Utilisateur inscrit avec succès", user));
     }
     

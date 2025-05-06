@@ -7,11 +7,12 @@ import com.dim.taskmanager.auth.exception.EmailAlreadyUsedException;
 import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
 import com.dim.taskmanager.auth.exception.UserNameAlreadyUsedException;
 import com.dim.taskmanager.auth.exception.UserNotFoundException;
+import com.dim.taskmanager.auth.mapper.AuthMapper;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
+import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.auth.service.AuthService;
 import com.dim.taskmanager.auth.service.JWTService;
 import com.dim.taskmanager.user.entity.UserEntity;
-import com.dim.taskmanager.user.mapper.UserMapper;
 import com.dim.taskmanager.user.repository.UserRepository;
 import com.dim.taskmanager.user.response.output.UserDTO;
 
@@ -31,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
 	
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final UserMapper userMapper;
+	private final AuthMapper authMapper;
 	private final JWTService jwtService;
 
 	/**
@@ -45,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 	 * @throws EmailAlreadyUsedException si un utilisateur existe déjà avec cet email.
 	 */
 	@Override
-	public UserDTO register(RegisterRequest rawRegister) {
+	public AuthDTO register(RegisterRequest rawRegister) {
 		userRepository.findByEmail(rawRegister.email())
 			.ifPresent(user -> {
 				log.warn("Création échouée - email déjà utilisé : {}", rawRegister.email());
@@ -62,10 +63,10 @@ public class AuthServiceImpl implements AuthService {
 		
 		RegisterRequest register = new RegisterRequest(rawRegister.userName(), rawRegister.name(), rawRegister.firstName(), rawRegister.email(), encodedPassword);
 		
-		UserEntity userSaved = userRepository.save(userMapper.toEntity(register));
+		UserEntity userSaved = userRepository.save(authMapper.toEntity(register));
 		
 		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
-		return userMapper.toDTO(userSaved);
+		return authMapper.toDTO(userSaved);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.dim.taskmanager.auth.service;
 
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
+import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.user.response.output.UserDTO;
 
 /**
@@ -26,7 +27,7 @@ public interface AuthService {
 	 * @return L'utilisateur créé, sous forme de {@link UserDTO}.
 	 * @throws EmailAlreadyUsedException si l'adresse email est déjà utilisée.
 	 */
-	UserDTO register(RegisterRequest request);
+	AuthDTO register(RegisterRequest request);
 
 	/**	
 	 * Authentifie un utilisateur à partir de son email et de son mot de passe.

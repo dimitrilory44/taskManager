@@ -1,4 +1,4 @@
-package com.dim.taskmanager.integration;
+package com.dim.taskmanager.auth.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +11,11 @@ import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
 import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.auth.response.input.LoginRequest;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
+import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.auth.service.AuthService;
 import com.dim.taskmanager.user.entity.UserEntity;
 import com.dim.taskmanager.user.model.Role;
 import com.dim.taskmanager.user.repository.UserRepository;
-import com.dim.taskmanager.user.response.output.UserDTO;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -53,7 +53,7 @@ class AuthServiceIntegrationTest {
     	RegisterRequest request = new RegisterRequest("username", "dimitri", "lory", "email@example.com", "password");
 
         // When
-        UserDTO userDTO = authService.register(request);
+        AuthDTO userDTO = authService.register(request);
 
         // Then
         UserEntity user = userRepository.findByEmail("email@example.com").orElseThrow();
