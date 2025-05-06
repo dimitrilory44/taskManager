@@ -1,6 +1,7 @@
 package com.dim.taskmanager.exception.error;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ public interface ApiError {
 	String message();
 	String error();
 	
-	default Map<String, ?> details() {
+	default Map<String, String> details() {
 		return null;
 	}
 	
@@ -25,9 +26,10 @@ public interface ApiError {
 	 * @return             Une réponse HTTP complète contenant les informations d'erreur.
 	 */
 	default ResponseEntity<Object> buildResponse() {
-		Map<String, Object> bodyError = ErrorUtils.buildError(status().value(), message(), error());
-		if (details() != null) {bodyError.putAll(details());}
-        return new ResponseEntity<>(bodyError, status());
+		Object errorBody = Optional.ofNullable(details())
+				.<Object>map(fieldErrors -> ErrorUtils.buildValidationError(fieldErrors, status(), message()))
+				.orElseGet(() -> ErrorUtils.buildError(status(), message(), error()));
+        return new ResponseEntity<>(errorBody, status());
     }
 	
 }

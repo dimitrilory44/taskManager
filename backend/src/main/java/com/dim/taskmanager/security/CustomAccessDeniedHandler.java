@@ -1,7 +1,6 @@
 package com.dim.taskmanager.security;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -9,6 +8,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.dim.taskmanager.config.ErrorMessages;
+import com.dim.taskmanager.response.output.GlobalResponseError;
 import com.dim.taskmanager.utils.ErrorUtils;
 
 import jakarta.servlet.ServletException;
@@ -24,8 +24,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json");
         
-        Map<String, Object> errorBody = ErrorUtils.buildError(
-        		HttpStatus.FORBIDDEN.value(), 
+        GlobalResponseError errorBody = ErrorUtils.buildError(
+        		HttpStatus.FORBIDDEN, 
         		ErrorMessages.get("access.denied"), 
         		ErrorMessages.get("access.denied.message")
         );

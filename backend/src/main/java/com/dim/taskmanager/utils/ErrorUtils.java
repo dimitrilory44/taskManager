@@ -2,53 +2,59 @@ package com.dim.taskmanager.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+
+import com.dim.taskmanager.response.output.GlobalResponseError;
+import com.dim.taskmanager.response.output.ValidationResponseError;
 
 public class ErrorUtils {
 
 	/**
-     * Méthode utilitaire pour construire une erreur sous forme de Map.
-     * Utilisée pour une réponse d'erreur simple en JSON.
+     * Construit un objet ValidationResponseError à partir des détails de validation fournis.
      *
-     * @param httpStatus Le code de statut HTTP (par exemple 404, 500, 403, etc.)
-     * @param message    Le message d'erreur, qui sera affiché dans le corps de la réponse.
-     * @param error      Le nom ou type de l'erreur, comme "Not Found" ou "Internal Server Error".
-     * @return Une Map contenant la structure de l'erreur avec les informations suivantes :
-     *         - timestamp (heure actuelle)
-     *         - status (code de statut HTTP)
-     *         - error (nom/type de l'erreur)
-     *         - message (description de l'erreur)
+     * @param details      Map des erreurs de validation, avec le nom du champ en clé et le message en valeur.
+     * @param httpStatus   Le statut HTTP à retourner (ex : 400 BAD_REQUEST).
+     * @param message      Le message global d'erreur à afficher.
+     * @return             Un objet ValidationResponseError complet.
      */
-	public static Map<String, Object> buildError(int httpStatus, String message, String error) {
-		Map<String, Object> errorBody = new HashMap<>();
-		errorBody.put("timestamp", LocalDateTime.now());
-		errorBody.put("status", httpStatus);
-		errorBody.put("error", error);
-		errorBody.put("message", message);
-		return errorBody;
+	public static ValidationResponseError buildValidationError(Map<String, String> details, HttpStatus httpStatus, String message) {
+		return new ValidationResponseError(details, message, LocalDateTime.now(), httpStatus.value());
+	}
+	
+	/**
+     * Construit un objet GlobalResponseError pour des erreurs générales (non liées à la validation).
+     *
+     * @param httpStatus   Le code de statut HTTP (ex : 404, 500).
+     * @param message      Message d'erreur plus détaillé (ex : "Utilisateur non trouvé").
+     * @param error        Libellé général de l'erreur (ex : "Not Found").
+     * @return             Un objet GlobalResponseError contenant toutes les informations de l'erreur.
+     */
+	public static GlobalResponseError buildError(HttpStatus httpStatus, String message, String error) {
+		return new GlobalResponseError(error, message, LocalDateTime.now(), httpStatus.value());
 	}
 
 	/**
-     * Méthode utilitaire pour convertir une Map contenant des informations d'erreur en une chaîne JSON.
+     * Convertit un objet GlobalResponseError en une chaîne JSON manuellement.
+     * À noter : normalement, Spring s'occupe déjà de cette sérialisation via Jackson.
      *
-     * @param errorBody La Map contenant les informations d'erreur (comme le timestamp, le status, etc.)
-     * @return Une chaîne JSON représentant les informations d'erreur.
+     * @param error    L'objet GlobalResponseError à convertir.
+     * @return         Une chaîne JSON représentant l'objet.
      */
-	public static String convertJSONError(Map<String, Object> errorBody) {
-		return errorBody.entrySet().stream()
-				.map(e -> {
-					// Formater le timestamp si la valeur est un LocalDateTime
-					Object value = e.getValue();
-					if (value instanceof LocalDateTime) {
-						value = ((LocalDateTime) value).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-					}
+	public static String convertJSONError(GlobalResponseError error) {
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-					// Formater la clé et la valeur comme JSON (en ajoutant des guillemets pour les chaînes)
-					return "\"%s\": %s".formatted(e.getKey(), value instanceof String ? "\"" + value + "\"" : value);
-				})
-				.collect(Collectors.joining(", ", "{", "}"));
+	    StringBuilder json = new StringBuilder("{");
+
+	    json.append("\"error\": \"").append(error.error()).append("\", ");
+	    json.append("\"message\": \"").append(error.message()).append("\", ");
+	    json.append("\"timestamp\": \"").append(error.timestamp().format(formatter)).append("\", ");
+	    json.append("\"status\": ").append(error.status());
+
+	    json.append("}");
+
+	    return json.toString();
 	}
 
 }

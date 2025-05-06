@@ -1,4 +1,4 @@
-package com.dim.taskmanager.config;
+package com.dim.taskmanager.security;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dim.taskmanager.auth.JwtAuthenticationFilter;
-import com.dim.taskmanager.security.CustomAccessDeniedHandler;
-import com.dim.taskmanager.security.CustomAuthenticationEntryPoint;
+import com.dim.taskmanager.config.ApiProperties;
 
 import lombok.RequiredArgsConstructor;
 

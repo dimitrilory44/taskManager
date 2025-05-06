@@ -13,7 +13,7 @@ public record ValidationError(
 		HttpStatus status,
 	    String message,
 	    String error,
-		Map<String, ?> details
+		Map<String, String> details
 ) implements ApiError {
 
 	public ValidationError(MethodArgumentNotValidException ex) {
@@ -21,8 +21,12 @@ public record ValidationError(
 			HttpStatus.BAD_REQUEST, 
 			ErrorMessages.get("validation.message"), 
 			ErrorMessages.get("validation.error"),
-			Map.of("fieldErrors", ex.getBindingResult().getFieldErrors().stream()
-				.collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (e1, e2) -> e1))
+			ex.getBindingResult().getFieldErrors().stream()
+				.collect(Collectors.toMap(
+						FieldError::getField, 
+						FieldError::getDefaultMessage,
+						(existing, replacement) -> existing  // en cas de doublon, garde le premier
+				)
 			)
 		);
 	}
