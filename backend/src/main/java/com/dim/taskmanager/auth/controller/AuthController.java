@@ -61,9 +61,7 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = GlobalResponse.class))),
         @ApiResponse(responseCode = "400", description = "Requête invalide",
             content = @Content(schema = @Schema(implementation = ValidationResponseError.class))),
-        @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
-            content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
-        @ApiResponse(responseCode = "409", description = "Email déjà utilisé",
+        @ApiResponse(responseCode = "409", description = "Champ déjà utilisé",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
         @ApiResponse(responseCode = "500", description = "Erreur technique",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))

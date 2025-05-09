@@ -1,10 +1,10 @@
 package com.dim.taskmanager.task.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
-import com.dim.taskmanager.attachment.AttachmentEntity;
-import com.dim.taskmanager.project.ProjectEntity;
+import com.dim.taskmanager.attachment.entity.AttachmentEntity;
+import com.dim.taskmanager.project.entity.ProjectEntity;
 import com.dim.taskmanager.task.model.Priority;
 import com.dim.taskmanager.task.model.Status;
 
@@ -38,7 +38,7 @@ public class TaskEntity {
 	
 	private Boolean completed;
 	
-	private Date dueDate;
+	private LocalDate dueDate;
 	
 	@ManyToOne
 	private ProjectEntity project;

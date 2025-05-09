@@ -31,50 +31,50 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Tag(name = "Gestion des utilisateurs", description = "Endpoints for users management")
 public class UserController {
-	
+
 	private final UserService userService;
-	
+
 	@GetMapping("")
-    @Operation(summary = "User List", description = "Récupère la liste des utilisateurs")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Récuperation réussie",
-            content = @Content(schema = @Schema(implementation = UserDTO.class))),
-        @ApiResponse(responseCode = "401", description = "Mot de passe incorrect",
-            content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
-        @ApiResponse(responseCode = "401", description = "Authentication nécessaire",
-        	content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
-        @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
-            content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
-        @ApiResponse(responseCode = "500", description = "Erreur technique",
-            content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
-    })
-    public ResponseEntity<PaginatedResponse<UserDTO>> taskList(Pageable pageable) {
-        log.info("Tentative de récupération de la liste des utilisateurs");
-        Page<UserDTO> userPage = userService.getAllUsers(pageable);
-        return ResponseEntity.ok(new PaginatedResponse<>(
-        		userPage.getContent(), 
-        		userPage.getNumber(), 
-        		userPage.getSize(), 
-        		userPage.getTotalElements(), 
-        		userPage.getTotalPages()
-        ));
-    }
-	
+	@Operation(summary = "User List", description = "Récupère la liste des utilisateurs")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Récuperation réussie",
+					content = @Content(schema = @Schema(implementation = UserDTO.class))),
+			@ApiResponse(responseCode = "401", description = "Mot de passe incorrect",
+			content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "401", description = "Authentication nécessaire",
+			content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+			content = @Content(schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "500", description = "Erreur technique",
+			content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
+	})
+	public ResponseEntity<PaginatedResponse<UserDTO>> usersList(Pageable pageable) {
+		log.info("Tentative de récupération de la liste des utilisateurs");
+		Page<UserDTO> userPage = userService.getAllUsers(pageable);
+		return ResponseEntity.ok(new PaginatedResponse<>(
+			userPage.getContent(), 
+			userPage.getNumber(), 
+			userPage.getSize(), 
+			userPage.getTotalElements(), 
+			userPage.getTotalPages()
+		));
+	}
+
 	@DeleteMapping("/{id}")
 	@Operation(summary = "Delete User", description = "Supprime un utilisateur en fonction de son id")
 	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "Utilisateur supprimé avec succès",
-		    content = @Content(schema = @Schema(implementation = GlobalResponse.class))),
-	    @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
-	        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class))),
-	    @ApiResponse(responseCode = "500", description = "Erreur technique",
-	        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class)))
+			@ApiResponse(responseCode = "200", description = "Utilisateur supprimé avec succès",
+					content = @Content(schema = @Schema(implementation = GlobalResponse.class))),
+			@ApiResponse(responseCode = "404", description = "Utilisateur non trouvé",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class))),
+			@ApiResponse(responseCode = "500", description = "Erreur technique",
+			content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class)))
 	})
-    public ResponseEntity<GlobalResponse<UserDTO>> deleteUser(@PathVariable Long id) {
+	public ResponseEntity<GlobalResponse<UserDTO>> deleteUser(@PathVariable Long id) {
 		UserDTO user = userService.getUserById(id);
-        log.info("Tentative de suppression d'un utilisateur {}", user);
-        userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Utilisateur supprimé avec succès", user));
-    }
+		log.info("Tentative de suppression d'un utilisateur {}", user);
+		userService.deleteUser(id);
+		return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Utilisateur supprimé avec succès", user));
+	}
 
 }

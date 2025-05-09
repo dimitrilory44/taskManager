@@ -16,7 +16,7 @@ public interface AuthMapper extends TaskManagerMapper<AuthDTO, UserEntity> {
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "role", expression = "java(setDefaultRole())")
 	@Mapping(target = "enabled", expression = "java(setDefaultEnabled())")
-	UserEntity toEntity(RegisterRequest request);
+	UserEntity toUserEntity(RegisterRequest request);
 	
 	@Mapping(target = "userName", source = "username")
 	AuthDTO toDTO(UserEntity user);

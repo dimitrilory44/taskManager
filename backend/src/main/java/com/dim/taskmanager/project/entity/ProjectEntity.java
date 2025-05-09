@@ -1,4 +1,4 @@
-package com.dim.taskmanager.project;
+package com.dim.taskmanager.project.entity;
 
 import java.util.List;
 

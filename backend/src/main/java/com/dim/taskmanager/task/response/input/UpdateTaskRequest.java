@@ -1,14 +1,16 @@
-package com.dim.taskmanager.task.response.output;
+package com.dim.taskmanager.task.response.input;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 
+import com.dim.taskmanager.attachment.response.output.AttachmentDTO;
 import com.dim.taskmanager.task.model.Priority;
 import com.dim.taskmanager.task.model.Status;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UpdateTaskDTO(
+public record UpdateTaskRequest(
 	
 	@NotBlank
 	String title,
@@ -16,7 +18,7 @@ public record UpdateTaskDTO(
 	String description,
 	
 	@NotNull
-	LocalDateTime dueDate,
+	LocalDate dueDate,
 	
 	@NotNull
 	Boolean completed,
@@ -26,6 +28,8 @@ public record UpdateTaskDTO(
 	
 	Status status,
 	
-    Priority priority
+    Priority priority,
+    
+    List<AttachmentDTO> attachments
 	
 ) {}

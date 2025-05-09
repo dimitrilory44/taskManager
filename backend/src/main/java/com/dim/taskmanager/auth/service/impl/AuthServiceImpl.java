@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import com.dim.taskmanager.auth.exception.EmailAlreadyUsedException;
 import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
 import com.dim.taskmanager.auth.exception.UserNameAlreadyUsedException;
-import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.auth.mapper.AuthMapper;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
 import com.dim.taskmanager.auth.response.output.AuthDTO;
@@ -61,9 +60,13 @@ public class AuthServiceImpl implements AuthService {
 		
 		String encodedPassword = passwordEncoder.encode(rawRegister.password());
 		
-		RegisterRequest register = new RegisterRequest(rawRegister.userName(), rawRegister.name(), rawRegister.firstName(), rawRegister.email(), encodedPassword);
+		RegisterRequest register = new RegisterRequest(
+			rawRegister.userName(), 
+			rawRegister.name(), 
+			rawRegister.firstName(), 
+			rawRegister.email(), encodedPassword);
 		
-		UserEntity userSaved = userRepository.save(authMapper.toEntity(register));
+		UserEntity userSaved = userRepository.save(authMapper.toUserEntity(register));
 		
 		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
 		return authMapper.toDTO(userSaved);
@@ -78,7 +81,6 @@ public class AuthServiceImpl implements AuthService {
 	 * @param email l'adresse email de l'utilisateur.
 	 * @param password le mot de passe (en clair) à vérifier.
 	 * @return un JWT en cas de succès.
-	 * @throws UserNotFoundException si aucun utilisateur ne correspond à cet email.
 	 * @throws InvalidCredentialsException si le mot de passe est incorrect.
 	 */
 	@Override
@@ -86,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 		UserEntity userPresent = userRepository.findByEmail(email)
 			.orElseThrow(() -> {
 				log.warn("Connexion échouée - utilisateur non trouvé : {}", email);
-				return new UserNotFoundException("Utilisateur non trouvé");
+				return new InvalidCredentialsException("Utilisateur introuvable");
 			});
 		
 		if(!passwordEncoder.matches(password, userPresent.getPassword())) {

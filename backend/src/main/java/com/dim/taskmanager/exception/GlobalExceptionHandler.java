@@ -8,6 +8,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.dim.taskmanager.auth.exception.AuthException;
 import com.dim.taskmanager.auth.exception.error.AuthError;
 import com.dim.taskmanager.exception.error.*;
+import com.dim.taskmanager.user.exception.UserNotFoundException;
+import com.dim.taskmanager.user.exception.error.UserError;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -29,6 +31,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<Object> handleAuthException(AuthException ex) {
 		AuthError error = new AuthError(ex);
+		return error.buildResponse();
+	}
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
+		UserError error = new UserError(ex);
 		return error.buildResponse();
 	}
 

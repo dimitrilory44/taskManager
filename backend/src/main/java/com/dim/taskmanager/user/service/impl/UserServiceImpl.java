@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.user.entity.UserEntity;
+import com.dim.taskmanager.user.exception.UserNotFoundException;
 import com.dim.taskmanager.user.mapper.UserMapper;
 import com.dim.taskmanager.user.model.Role;
 import com.dim.taskmanager.user.repository.UserRepository;
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Page<UserDTO> getAllUsers(Pageable pageable) {
 		Page<UserEntity> usersPage = userRepository.findAllByRoleNot(Role.ADMIN, pageable);		
-		return userMapper.toPageUserDTO(usersPage);
+		return userMapper.toPageDTO(usersPage);
 	}
 
 	@Override

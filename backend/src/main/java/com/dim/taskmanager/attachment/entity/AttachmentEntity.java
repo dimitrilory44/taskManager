@@ -1,4 +1,4 @@
-package com.dim.taskmanager.attachment;
+package com.dim.taskmanager.attachment.entity;
 
 import com.dim.taskmanager.task.entity.TaskEntity;
 

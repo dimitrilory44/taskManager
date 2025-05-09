@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.dim.taskmanager.auth.exception.EmailAlreadyUsedException;
 import com.dim.taskmanager.auth.exception.InvalidCredentialsException;
-import com.dim.taskmanager.auth.exception.UserNotFoundException;
 import com.dim.taskmanager.auth.mapper.AuthMapper;
 import com.dim.taskmanager.auth.response.input.LoginRequest;
 import com.dim.taskmanager.auth.response.input.RegisterRequest;
@@ -78,7 +77,7 @@ class AuthServiceImplTest {
 
 		when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
 		when(passwordEncoder.encode(request.password())).thenReturn("123456");
-		when(authMapper.toEntity(request)).thenReturn(user);
+		when(authMapper.toUserEntity(request)).thenReturn(user);
 		when(userRepository.save(user)).thenReturn(user);
 		when(authMapper.toDTO(user)).thenReturn(userDTO);
 
@@ -135,7 +134,7 @@ class AuthServiceImplTest {
 		when(userRepository.findByEmail(nonExistingEmail)).thenReturn(Optional.empty());
 
 		// Act & Assert
-		assertThrows(UserNotFoundException.class, () -> authService.login(nonExistingEmail, "password"));
+		assertThrows(InvalidCredentialsException.class, () -> authService.login(nonExistingEmail, "password"));
 	}
 
 	@Test
