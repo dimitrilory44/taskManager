@@ -3,7 +3,8 @@ package com.dim.taskmanager.task.response.input;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.dim.taskmanager.attachment.response.output.AttachmentDTO;
+import com.dim.taskmanager.attachment.response.input.AttachmentRequest;
+import com.dim.taskmanager.project.response.input.UpdateProjectRequest;
 import com.dim.taskmanager.task.model.Priority;
 import com.dim.taskmanager.task.model.Status;
 
@@ -23,13 +24,12 @@ public record UpdateTaskRequest(
 	@NotNull
 	Boolean completed,
 	
-	@NotNull
-	Long projectId,
+	UpdateProjectRequest project,
 	
 	Status status,
 	
     Priority priority,
     
-    List<AttachmentDTO> attachments
+    List<AttachmentRequest> attachments
 	
 ) {}

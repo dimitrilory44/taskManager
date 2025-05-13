@@ -12,6 +12,7 @@ import com.dim.taskmanager.auth.response.output.AuthDTO;
 import com.dim.taskmanager.auth.service.AuthService;
 import com.dim.taskmanager.auth.service.JWTService;
 import com.dim.taskmanager.user.entity.UserEntity;
+import com.dim.taskmanager.user.model.Role;
 import com.dim.taskmanager.user.repository.UserRepository;
 import com.dim.taskmanager.user.response.output.UserDTO;
 
@@ -45,31 +46,31 @@ public class AuthServiceImpl implements AuthService {
 	 * @throws EmailAlreadyUsedException si un utilisateur existe déjà avec cet email.
 	 */
 	@Override
-	public AuthDTO register(RegisterRequest rawRegister) {
-		userRepository.findByEmail(rawRegister.email())
+	public AuthDTO register(RegisterRequest register) {
+		userRepository.findByEmail(register.email())
 			.ifPresent(user -> {
-				log.warn("Création échouée - email déjà utilisé : {}", rawRegister.email());
+				log.warn("Création échouée - email déjà utilisé : {}", register.email());
 				throw new EmailAlreadyUsedException("Email déjà utilisé");
 			});
 		
-		userRepository.findByUserName(rawRegister.userName())
+		userRepository.findByUserName(register.userName())
 			.ifPresent(user -> {
-				log.warn("Création échouée - userName déjà utilisé : {}", rawRegister.userName());
+				log.warn("Création échouée - userName déjà utilisé : {}", register.userName());
 				throw new UserNameAlreadyUsedException("UserName déjà utilisé"); 
 			});
 		
-		String encodedPassword = passwordEncoder.encode(rawRegister.password());
+		UserEntity user = new UserEntity();
+		user.setUserName(register.userName());
+		user.setName(register.name());
+		user.setFirstName(register.firstName());
+		user.setEmail(register.email());
+		user.setPassword(passwordEncoder.encode(register.password()));
+		user.setRole(Role.USER);
+		user.setEnabled(true);
+				
+		log.info("Tentative de création de l'utilisateur avec l'email : {}", user.getEmail());
+		return authMapper.toDTO(userRepository.save(user));
 		
-		RegisterRequest register = new RegisterRequest(
-			rawRegister.userName(), 
-			rawRegister.name(), 
-			rawRegister.firstName(), 
-			rawRegister.email(), encodedPassword);
-		
-		UserEntity userSaved = userRepository.save(authMapper.toUserEntity(register));
-		
-		log.info("Tentative de création de l'utilisateur avec l'email : {}", userSaved.getEmail());
-		return authMapper.toDTO(userSaved);
 	}
 
 	/**
@@ -98,6 +99,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		log.info("Connexion réussie pour l'utilisateur : {}", email);
 		return jwtService.generateToken(email, userPresent.getRole().toString());
+		
 	}
 		
 }

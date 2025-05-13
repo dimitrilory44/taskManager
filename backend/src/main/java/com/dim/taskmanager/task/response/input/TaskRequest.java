@@ -3,6 +3,7 @@ package com.dim.taskmanager.task.response.input;
 import java.util.List;
 
 import com.dim.taskmanager.attachment.response.input.AttachmentRequest;
+import com.dim.taskmanager.project.response.input.ProjectRequest;
 import com.dim.taskmanager.task.model.Priority;
 import com.dim.taskmanager.task.model.Status;
 
@@ -15,8 +16,7 @@ public record TaskRequest(
 		
 	String description,
 		
-	@NotNull
-	Long projectId,
+	ProjectRequest project,
 		
 	Status status,
 		

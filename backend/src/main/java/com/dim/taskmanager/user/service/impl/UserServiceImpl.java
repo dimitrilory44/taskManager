@@ -25,8 +25,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Page<UserDTO> getAllUsers(Pageable pageable) {
-		Page<UserEntity> usersPage = userRepository.findAllByRoleNot(Role.ADMIN, pageable);		
+		Page<UserEntity> usersPage = userRepository.findAllByRoleNot(Role.ADMIN, pageable);
+		
 		return userMapper.toPageDTO(usersPage);
+		
 	}
 
 	@Override
@@ -36,7 +38,9 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> 
 					new UserNotFoundException("Utilisateur non trouvé pour l'ID : " + id)
 				);
+		
 		return userMapper.toDTO(user);
+		
 	}
 
 	@Override
@@ -45,7 +49,9 @@ public class UserServiceImpl implements UserService {
 		if (!userRepository.existsById(id)) {
 			throw new UserNotFoundException("Utilisateur non trouvé pour l'ID : " + id);
 		}
+		
 		userRepository.deleteById(id);
+		
 	}
 
 }
