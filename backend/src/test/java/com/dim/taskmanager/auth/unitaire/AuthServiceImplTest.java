@@ -70,14 +70,18 @@ class AuthServiceImplTest {
 		RegisterRequest request = new RegisterRequest("dim", "lory", "dimitri", "dim@example.com", "123456");
 
 		UserEntity user = new UserEntity();
+		user.setName(request.name());
+		user.setFirstName(request.firstName());
+		user.setUserName(request.userName());
 		user.setEmail(request.email());
 		user.setPassword("encoded-password");
+		user.setRole(Role.USER);
+		user.setEnabled(true);
 
 		AuthDTO userDTO = new AuthDTO(1L, "Alice", "", "", request.email());
 
 		when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
-		when(passwordEncoder.encode(request.password())).thenReturn("123456");
-		when(authMapper.toUserEntity(request)).thenReturn(user);
+		when(passwordEncoder.encode(request.password())).thenReturn(user.getPassword());
 		when(userRepository.save(user)).thenReturn(user);
 		when(authMapper.toDTO(user)).thenReturn(userDTO);
 
