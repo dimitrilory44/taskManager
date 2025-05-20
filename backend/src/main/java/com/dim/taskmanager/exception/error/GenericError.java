@@ -3,19 +3,26 @@ package com.dim.taskmanager.exception.error;
 import org.springframework.http.HttpStatus;
 
 import com.dim.taskmanager.config.ErrorMessages;
+import com.dim.taskmanager.response.output.GlobalResponseError;
+import com.dim.taskmanager.utils.ErrorUtils;
 
 public record GenericError(
 		HttpStatus status,
-		String message,
-		String error
-) implements ApiError {
+		String error,
+		String message
+) implements ApiError<GlobalResponseError> {
 	
 	public GenericError(Exception ex) {
-		this(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ErrorMessages.get("internal.error"));
+		this(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.get("internal.error"), ex.getMessage());
     }
 	
 	public GenericError(IllegalArgumentException ex) {
-		this(HttpStatus.BAD_REQUEST, ex.getMessage(), ErrorMessages.get("illegal.error"));
+		this(HttpStatus.BAD_REQUEST, ErrorMessages.get("illegal.error"), ex.getMessage());
+	}
+
+	@Override
+	public GlobalResponseError buildBody() {
+		return ErrorUtils.buildError(status, message, error);
 	}
 
 }

@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO getUserById(Long id) {
+	public UserDTO getUser(Long id) {
 		log.info("Tentative de récupération d'un utilisateur avec l'ID : {}", id);
 		UserEntity user = userRepository.findById(id)
 				.orElseThrow(() -> 

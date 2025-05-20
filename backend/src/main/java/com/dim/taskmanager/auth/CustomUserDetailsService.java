@@ -3,7 +3,6 @@ package com.dim.taskmanager.auth;
 import java.util.List;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,7 +43,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         String roleName = user.getRole().toString();
         String authority = "ROLE_" + roleName;
         
-        return new User(
+        return new CustomUserDetails(
+        	user.getId(),
             user.getEmail(),
             user.getPassword(),
             List.of(new SimpleGrantedAuthority(authority)) 

@@ -8,19 +8,21 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.dim.taskmanager.config.ErrorMessages;
+import com.dim.taskmanager.response.output.ValidationResponseError;
+import com.dim.taskmanager.utils.ErrorUtils;
 
 public record ValidationError(
 		HttpStatus status,
+		String error,
 	    String message,
-	    String error,
 		Map<String, String> details
-) implements ApiError {
+) implements ApiError<ValidationResponseError> {
 
 	public ValidationError(MethodArgumentNotValidException ex) {
 		this(
 			HttpStatus.BAD_REQUEST, 
-			ErrorMessages.get("validation.message"), 
 			ErrorMessages.get("validation.error"),
+			ErrorMessages.get("validation.message"), 
 			ex.getBindingResult().getFieldErrors().stream()
 				.collect(Collectors.toMap(
 						FieldError::getField, 
@@ -29,6 +31,11 @@ public record ValidationError(
 				)
 			)
 		);
+	}
+
+	@Override
+	public ValidationResponseError buildBody() {
+		return ErrorUtils.buildValidationError(details, status, message);
 	}
 
 }

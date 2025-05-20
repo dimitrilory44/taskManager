@@ -11,7 +11,7 @@ import com.dim.taskmanager.task.response.output.TaskDTO;
 public interface TaskService {
 
 	TaskDTO createTask(TaskRequest request);
-	Page<TaskDTO> getAllTask(Pageable pageable); 
+	Page<TaskDTO> getTasks(Pageable pageable); 
 	TaskDTO getTask(Long id); 
 	TaskDTO updateTask(Long id, UpdateTaskRequest taskRequest); 
 	TaskDTO patchTask(Long id, PatchTaskRequest dto); 

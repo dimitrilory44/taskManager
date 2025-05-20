@@ -54,7 +54,7 @@ public interface JWTService {
      * @param token le token JWT contenant les informations d'utilisateur.
      * @return le nom d'utilisateur (ou email) extrait du token. Ce nom est souvent utilisé pour l'authentification.
      */
-	String extractUsername(String token);
+	String extractUsername(String token);	
 	
 	/**
      * Extrait le token JWT à partir de la requête HTTP.

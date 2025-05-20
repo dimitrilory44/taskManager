@@ -17,6 +17,8 @@ public record TaskDTO (
 	ProjectDTO project,
 	Status status,
 	Priority priority,
+	Long authorId,
+	Long assignedToId,
 	List<AttachmentDTO> attachments
 
 ){}

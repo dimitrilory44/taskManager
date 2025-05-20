@@ -1,35 +1,59 @@
 package com.dim.taskmanager.exception.error;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.dim.taskmanager.utils.ErrorUtils;
+/**
+ * Interface générique représentant une erreur de l'API.
+ * Elle permet de standardiser la structure des réponses d'erreur.
+ *
+ * @param <T> Le type du corps de la réponse d'erreur (ex: GlobalResponseError, ValidationResponseError).
+ */
+public interface ApiError<T> {
 
-public interface ApiError {
-
+	/**
+     * Statut HTTP associé à l'erreur (ex : 400, 404, 500).
+     */
 	HttpStatus status();
-	String message();
+	
+	/**
+     * Libellé général de l'erreur (ex : "Bad Request", "Unauthorized").
+     */
 	String error();
 	
+	/**
+     * Message plus détaillé destiné à l'utilisateur ou au développeur.
+     */
+	String message();
+	
+	/**
+     * Construit et retourne le corps de la réponse d'erreur.
+     * Chaque implémentation est responsable de sa propre construction.
+     *
+     * @return le corps d'erreur de type T.
+     */
+	T buildBody();
+	
+	/**
+     * Fournit les détails supplémentaires de l'erreur sous forme de paires champ/message.
+     * Utile notamment pour les erreurs de validation de formulaire.
+     *
+     * @return une map contenant les détails, ou null si non applicable (valeur par défaut).
+     */
 	default Map<String, String> details() {
 		return null;
 	}
 	
 	/**
-	 * Méthode utilitaire utilisée par tous les gestionnaires pour construire une réponse JSON structurée.
-	 *
-	 * @param error       La class ApiError avec les spécificité de cette error à paramétrer
-	 *
-	 * @return             Une réponse HTTP complète contenant les informations d'erreur.
-	 */
-	default ResponseEntity<Object> buildResponse() {
-		Object errorBody = Optional.ofNullable(details())
-				.<Object>map(fieldErrors -> ErrorUtils.buildValidationError(fieldErrors, status(), message()))
-				.orElseGet(() -> ErrorUtils.buildError(status(), message(), error()));
-        return new ResponseEntity<>(errorBody, status());
+     * Méthode utilitaire utilisée par tous les gestionnaires d'exceptions pour
+     * construire une réponse HTTP structurée avec le corps d'erreur approprié.
+     *
+     * @return une ResponseEntity contenant le corps d'erreur et le statut HTTP.
+     */
+	default ResponseEntity<T> buildResponse() {
+        return new ResponseEntity<>(buildBody(), status());
     }
 	
 }

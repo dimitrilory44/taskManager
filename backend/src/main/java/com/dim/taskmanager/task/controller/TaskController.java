@@ -53,7 +53,9 @@ public class TaskController {
 	public ResponseEntity<GlobalResponse<TaskDTO>> createTask(@Valid @RequestBody TaskRequest taskRequest) {
 		log.info("Tentative de création de la tache : {}", taskRequest.toString());
 		TaskDTO newTask = taskService.createTask(taskRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(new GlobalResponse<>("Tache crée avec succès", newTask));
+		return ResponseEntity.status(HttpStatus.CREATED).body(
+			new GlobalResponse<>("Tache crée avec succès", newTask)
+		);
 	}
 	
 	@GetMapping("/{id}")
@@ -80,7 +82,7 @@ public class TaskController {
     })
     public ResponseEntity<PaginatedResponse<TaskDTO>> taskList(Pageable pageable) {
         log.info("Tentative de récupération de la liste de tache");
-        Page<TaskDTO> taskPage = taskService.getAllTask(pageable);
+        Page<TaskDTO> taskPage = taskService.getTasks(pageable);
         return ResponseEntity.ok(new PaginatedResponse<>(
         	taskPage.getContent(),
         	taskPage.getNumber(),
@@ -101,7 +103,9 @@ public class TaskController {
 	public ResponseEntity<GlobalResponse<TaskDTO>> updateTask(@PathVariable("id") Long taskId, @Valid @RequestBody UpdateTaskRequest updateTaskDTO) {
 		log.info("Modification de la tache");
 		TaskDTO taskUpdate = taskService.updateTask(taskId, updateTaskDTO);
-		return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Tâche modifée avec succès", taskUpdate));
+		return ResponseEntity.status(HttpStatus.OK).body(
+			new GlobalResponse<>("Tâche modifée avec succès", taskUpdate)
+		);
 	}
 	
 	@PatchMapping("/{id}")
@@ -115,7 +119,9 @@ public class TaskController {
 	public ResponseEntity<GlobalResponse<TaskDTO>> patchTask(@PathVariable("id") Long taskId, @RequestBody PatchTaskRequest patchTaskDTO) {
 		log.info("Modification de l'information de la tache");
 		TaskDTO taskPatch = taskService.patchTask(taskId, patchTaskDTO);
-		return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Tâche patchée avec succès", taskPatch));
+		return ResponseEntity.status(HttpStatus.OK).body(
+			new GlobalResponse<>("Tâche patchée avec succès", taskPatch)
+		);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -130,6 +136,8 @@ public class TaskController {
 		TaskDTO task = taskService.getTask(taskId);
 		log.info("Suppression de la tâche {}", task);
 		taskService.deleteTask(taskId);
-		return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Tache supprimée avec succès", task));
+		return ResponseEntity.status(HttpStatus.OK).body(
+			new GlobalResponse<>("Tache supprimée avec succès", task)
+		);
 	}
 }

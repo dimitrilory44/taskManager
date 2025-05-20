@@ -1,5 +1,6 @@
 package com.dim.taskmanager.config;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 public class ErrorMessages {
@@ -9,4 +10,11 @@ public class ErrorMessages {
 	public static String get(String key) {
 		return bundle.getString(key);
 	}
+	
+	public static String get(String key, Object... args) {
+		String pattern = bundle.getString(key);
+		return MessageFormat.format(pattern, args);
+	}
+	
+	
 }

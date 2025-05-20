@@ -7,6 +7,6 @@ import com.dim.taskmanager.user.response.output.UserDTO;
 
 public interface UserService {
 	Page<UserDTO> getAllUsers(Pageable pageable);
-	UserDTO getUserById(Long id);
+	UserDTO getUser(Long id);
 	void deleteUser(Long id);
 }

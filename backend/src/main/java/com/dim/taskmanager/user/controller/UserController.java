@@ -71,7 +71,7 @@ public class UserController {
 			content = @Content(mediaType = "application/json", schema = @Schema(implementation = GlobalResponseError.class)))
 	})
 	public ResponseEntity<GlobalResponse<UserDTO>> deleteUser(@PathVariable Long id) {
-		UserDTO user = userService.getUserById(id);
+		UserDTO user = userService.getUser(id);
 		log.info("Tentative de suppression d'un utilisateur {}", user);
 		userService.deleteUser(id);
 		return ResponseEntity.status(HttpStatus.OK).body(new GlobalResponse<>("Utilisateur supprimé avec succès", user));

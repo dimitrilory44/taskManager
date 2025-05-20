@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.dim.taskmanager.project.entity.ProjectEntity;
+import com.dim.taskmanager.task.entity.TaskEntity;
 import com.dim.taskmanager.user.model.Role;
 
 import jakarta.persistence.CascadeType;
@@ -51,6 +52,12 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ProjectEntity> projects;
+    
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<TaskEntity> createdTasks;
+    
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
+    private List<TaskEntity> assignedTasks;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

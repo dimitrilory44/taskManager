@@ -2,11 +2,13 @@ package com.dim.taskmanager.project.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dim.taskmanager.auth.CustomUserDetails;
 import com.dim.taskmanager.project.response.input.ProjectRequest;
 import com.dim.taskmanager.project.response.output.ProjectDTO;
 import com.dim.taskmanager.project.service.ProjectService;
@@ -40,10 +42,14 @@ public class ProjectController {
 			@ApiResponse(responseCode = "500", description = "Erreur technique",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 	})
-	public ResponseEntity<GlobalResponse<ProjectDTO>> createTask(@Valid @RequestBody ProjectRequest projectRequest) {
+	public ResponseEntity<GlobalResponse<ProjectDTO>> createTask(
+			@AuthenticationPrincipal CustomUserDetails userDetails, 
+			@Valid @RequestBody ProjectRequest projectRequest) {
 		log.info("Tentative de création du projet : {}", projectRequest.toString());
-		ProjectDTO newProject = projectService.createProject(projectRequest);
-		return ResponseEntity.status(HttpStatus.CREATED).body(new GlobalResponse<>("Projet crée avec succès", newProject));
+		ProjectDTO newProject = projectService.createProject(userDetails.getId(), projectRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).body(
+			new GlobalResponse<>("Projet crée avec succès", newProject)
+		);
 	}
 	
 }

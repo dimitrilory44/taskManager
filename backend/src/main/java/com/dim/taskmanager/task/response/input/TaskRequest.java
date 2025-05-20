@@ -8,7 +8,6 @@ import com.dim.taskmanager.task.model.Priority;
 import com.dim.taskmanager.task.model.Status;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record TaskRequest(
 	@NotBlank(message = "Le titre est obligatoire")
@@ -17,10 +16,16 @@ public record TaskRequest(
 	String description,
 		
 	ProjectRequest project,
+	
+	Long projectId,
 		
 	Status status,
 		
 	Priority priority,
+	
+	Long authorId,
+	
+	Long assignedTo,
 	
 	List<AttachmentRequest> attachments
 ) {}
