@@ -1,5 +1,7 @@
 package com.dim.taskmanager.task.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,7 +44,7 @@ public class TaskController {
 
 	private final TaskService taskService;
 	
-	@PostMapping("")
+	@PostMapping("/{projectId}")
 	@Operation(summary = "Task create", description = "Crée une nouvelle tâche")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Creation de la nouvelle tâche reussie",
@@ -50,9 +52,12 @@ public class TaskController {
 			@ApiResponse(responseCode = "500", description = "Erreur technique",
             content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 	})
-	public ResponseEntity<GlobalResponse<TaskDTO>> createTask(@Valid @RequestBody TaskRequest taskRequest) {
-		log.info("Tentative de création de la tache : {}", taskRequest.toString());
-		TaskDTO newTask = taskService.createTask(taskRequest);
+	public ResponseEntity<GlobalResponse<TaskDTO>> createTask(
+			@PathVariable("projectId") Long idProject,
+			@Valid @RequestBody TaskRequest taskRequest
+		) {
+		log.info("Tentative de création de la tache : {}", taskRequest);
+		TaskDTO newTask = taskService.createTask(idProject, taskRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(
 			new GlobalResponse<>("Tache crée avec succès", newTask)
 		);
@@ -92,7 +97,21 @@ public class TaskController {
         ));
     }
 	
-	@PutMapping("/{id}")
+	@GetMapping("/{projectId}")
+    @Operation(summary = "Task List By project", description = "Récupère la liste des taches d'un projet existant")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Récupération de la liste de tache réussie",
+            content = @Content(schema = @Schema(implementation = TaskDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Erreur technique",
+            content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
+    })
+    public ResponseEntity<List<TaskDTO>> taskListByProject(@PathVariable("projectId") Long idProject) {
+        log.info("Tentative de récupération de la liste de taches");
+        List<TaskDTO> taskList = taskService.getTasksByProject(idProject);
+        return ResponseEntity.ok(taskList);
+    }
+	
+	@PutMapping("/{taskId}/project/{projectId}")
 	@Operation(summary = "Update Task", description = "Modifie la tache")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Modification de la tache avec succès",
@@ -100,15 +119,19 @@ public class TaskController {
 			@ApiResponse(responseCode = "500", description = "Erreur technique",
             	content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 	})
-	public ResponseEntity<GlobalResponse<TaskDTO>> updateTask(@PathVariable("id") Long taskId, @Valid @RequestBody UpdateTaskRequest updateTaskDTO) {
-		log.info("Modification de la tache");
-		TaskDTO taskUpdate = taskService.updateTask(taskId, updateTaskDTO);
+	public ResponseEntity<GlobalResponse<TaskDTO>> updateTask(
+			@PathVariable("taskId") Long idTask, 
+			@PathVariable("projectId") Long idProject,
+			@Valid @RequestBody UpdateTaskRequest updateTaskDTO) {
+		TaskDTO task = taskService.getTask(idTask);
+		log.info("Tentative de modification de la tache : {}", task);
+		TaskDTO taskUpdate = taskService.updateTask(idTask, idProject, updateTaskDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(
 			new GlobalResponse<>("Tâche modifée avec succès", taskUpdate)
 		);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{taskId}/project/{projectId}")
 	@Operation(summary = "Patch Task", description = "Modifie une donnée de la tache")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Modification de la donnée de la tache avec succès",
@@ -116,9 +139,13 @@ public class TaskController {
 			@ApiResponse(responseCode = "500", description = "Erreur technique",
 				content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
 	})
-	public ResponseEntity<GlobalResponse<TaskDTO>> patchTask(@PathVariable("id") Long taskId, @RequestBody PatchTaskRequest patchTaskDTO) {
-		log.info("Modification de l'information de la tache");
-		TaskDTO taskPatch = taskService.patchTask(taskId, patchTaskDTO);
+	public ResponseEntity<GlobalResponse<TaskDTO>> patchTask(
+			@PathVariable("taskId") Long idTask, 
+			@PathVariable("projectId") Long idProject, 
+			@RequestBody PatchTaskRequest patchTaskDTO) {
+		TaskDTO task = taskService.getTask(idTask);
+		log.info("Tentative de modification de l'information de la tache {}", task);
+		TaskDTO taskPatch = taskService.patchTask(idTask, idProject, patchTaskDTO);
 		return ResponseEntity.status(HttpStatus.OK).body(
 			new GlobalResponse<>("Tâche patchée avec succès", taskPatch)
 		);

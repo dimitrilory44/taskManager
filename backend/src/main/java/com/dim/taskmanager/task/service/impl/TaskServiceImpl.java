@@ -7,9 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.dim.taskmanager.attachment.mapper.AttachmentMapper;
-import com.dim.taskmanager.attachment.response.output.AttachmentDTO;
-import com.dim.taskmanager.attachment.service.AttachmentService;
 import com.dim.taskmanager.project.mapper.ProjectMapper;
 import com.dim.taskmanager.project.response.output.ProjectDTO;
 import com.dim.taskmanager.project.service.ProjectService;
@@ -39,14 +36,12 @@ public class TaskServiceImpl implements TaskService {
 	private final TaskMapper taskMapper;
 	private final UserMapper userMapper;
 	private final ProjectMapper projectMapper;
-	private final AttachmentMapper attachmentMapper;
 	
 	private final ProjectService projectService;
 	private final UserService userService;
-	private final AttachmentService attachmentService;
 	
 	@Override
-	public TaskDTO createTask(TaskRequest request) {
+	public TaskDTO createTask(Long projectId, TaskRequest request) {
 		TaskEntity task = new TaskEntity();
 		
 		task.setTitle(request.title());
@@ -65,20 +60,13 @@ public class TaskServiceImpl implements TaskService {
 		}
 		
 		// Dans le cas d'un existant ou d'un nouveau projet
+		ProjectDTO project = projectService.getProject(projectId);
+		task.setProject(projectMapper.toEntity(project));
+		
 		if(request.project() != null) {
 			ProjectDTO newProject = projectService.createProject(request.authorId(), request.project());
 			task.setProject(projectMapper.toEntity(newProject));
-		} else if (request.projectId() != null) {
-			ProjectDTO project = projectService.getProject(request.projectId());
-			task.setProject(projectMapper.toEntity(project));
-		}
-		
-		if (request.attachments() != null && !request.attachments().isEmpty()) {
-			List<AttachmentDTO> atts = request.attachments().stream()
-					.map(attachmentService::createAttachment)
-					.toList();
-			task.setAttachments(attachmentMapper.toEntityList(atts));
-		}
+		} 
 		
 		TaskEntity savedTask = taskRepository.save(task);
 		log.info("Tâche créé avec succès : ID {}", savedTask.getId());
@@ -107,9 +95,16 @@ public class TaskServiceImpl implements TaskService {
 		return taskMapper.toPageDTO(tasks);
 		
 	}
+	
+	@Override
+	public List<TaskDTO> getTasksByProject(Long projectId) {
+		List<TaskEntity> tasks = taskRepository.findByProjectId(projectId);
+		
+		return taskMapper.toDTOList(tasks);
+	}
 
 	@Override
-	public TaskDTO updateTask(Long id, UpdateTaskRequest request) {
+	public TaskDTO updateTask(Long id, Long projectId, UpdateTaskRequest request) {
 		log.info("Tentative de modification d'une tache avec l'ID : {}", id);
 		
 		TaskEntity task = taskMapper.toEntity(this.getTask(id));
@@ -119,7 +114,7 @@ public class TaskServiceImpl implements TaskService {
 		task.setDueDate(request.dueDate());
 		task.setCompleted(request.completed());
 		if(request.project() != null) {
-			task.setProject(projectMapper.toEntity(projectService.updateProject(id, request.project())));
+			task.setProject(projectMapper.toEntity(projectService.updateProject(projectId, request.project())));
 		} 
 		if(request.status() != null) {
 			task.setStatus(request.status());
@@ -127,9 +122,6 @@ public class TaskServiceImpl implements TaskService {
 		if(request.priority() != null) {
 			task.setPriority(request.priority());
 		}
-		if (request.attachments() != null && !request.attachments().isEmpty()) {
-	        task.setAttachments(attachmentMapper.toEntityList(attachmentService.updateAttachments(id, request.attachments())));
-	    }
 		
 		TaskEntity updatedTask = taskRepository.save(task);
 		log.info("Tâche mise à jour avec succès : ID {}", updatedTask.getId());
@@ -139,7 +131,7 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	@Override
-	public TaskDTO patchTask(Long id, PatchTaskRequest request) {
+	public TaskDTO patchTask(Long id, Long projectId, PatchTaskRequest request) {
 		log.info("Tentative de patch d'une tache avec l'ID : {}", id);
 		
 		TaskEntity task = taskMapper.toEntity(this.getTask(id));
@@ -149,13 +141,10 @@ public class TaskServiceImpl implements TaskService {
 		request.completed().ifPresent(task::setCompleted);
 		request.dueDate().ifPresent(task::setDueDate);
 		request.project().ifPresent(project -> {
-			task.setProject(projectMapper.toEntity(projectService.updateProject(id, project)));	
+			task.setProject(projectMapper.toEntity(projectService.updateProject(projectId, project)));	
 		});
 		request.status().ifPresent(task::setStatus);
 		request.priority().ifPresent(task::setPriority);
-		request.attachments().ifPresent(attachments -> {		
-			task.setAttachments(attachmentMapper.toEntityList(attachmentService.updateAttachments(id, attachments)));
-		});
 		
 		TaskEntity patchedTask = taskRepository.save(task);
 		log.info("Tâche patchée avec succès : ID {}", patchedTask.getId());
@@ -172,5 +161,5 @@ public class TaskServiceImpl implements TaskService {
 		taskRepository.delete(task);
 		
 	}
-	
+
 }

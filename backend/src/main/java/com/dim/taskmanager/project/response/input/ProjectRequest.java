@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ProjectRequest(
 		
-	String description,
-	
 	@NotBlank
-	String name
+	String name,
+	
+	String description
 	
 ) {}

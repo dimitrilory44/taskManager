@@ -3,13 +3,16 @@ package com.dim.taskmanager.project.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dim.taskmanager.auth.CustomUserDetails;
 import com.dim.taskmanager.project.response.input.ProjectRequest;
+import com.dim.taskmanager.project.response.input.UpdateProjectRequest;
 import com.dim.taskmanager.project.response.output.ProjectDTO;
 import com.dim.taskmanager.project.service.ProjectService;
 import com.dim.taskmanager.response.output.GlobalResponse;
@@ -35,7 +38,7 @@ public class ProjectController {
 	private final ProjectService projectService;
 	
 	@PostMapping("")
-	@Operation(summary = "project create", description = "Crée un nouveau projet")
+	@Operation(summary = "Create Project", description = "Crée un nouveau projet")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Creation du nouveau projet reussie",
 				content = @Content(schema = @Schema(implementation = GlobalResponse.class))),
@@ -49,6 +52,22 @@ public class ProjectController {
 		ProjectDTO newProject = projectService.createProject(userDetails.getId(), projectRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(
 			new GlobalResponse<>("Projet crée avec succès", newProject)
+		);
+	}
+	
+	@PutMapping("/{id}")
+	@Operation(summary = "Update Project", description = "Modifie le projet")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Modification du projet avec succès",
+				content = @Content(schema = @Schema(implementation = GlobalResponse.class))),
+			@ApiResponse(responseCode = "500", description = "Erreur technique",
+            	content = @Content(schema = @Schema(implementation = GlobalResponseError.class)))
+	})
+	public ResponseEntity<GlobalResponse<ProjectDTO>> updateProjet(@PathVariable("id") Long projectId, @Valid @RequestBody UpdateProjectRequest updateProjectDTO) {
+		log.info("Tentative de modification du projet ID {}", projectId);
+		ProjectDTO projectUpdate = projectService.updateProject(projectId, updateProjectDTO);
+		return ResponseEntity.status(HttpStatus.OK).body(
+			new GlobalResponse<>("Projet modifé avec succès", projectUpdate)
 		);
 	}
 	

@@ -6,6 +6,7 @@ import com.dim.taskmanager.project.entity.ProjectEntity;
 import com.dim.taskmanager.project.exception.ProjectNotFound;
 import com.dim.taskmanager.project.mapper.ProjectMapper;
 import com.dim.taskmanager.project.repository.ProjectRepository;
+import com.dim.taskmanager.project.response.input.PatchProjectRequest;
 import com.dim.taskmanager.project.response.input.ProjectRequest;
 import com.dim.taskmanager.project.response.input.UpdateProjectRequest;
 import com.dim.taskmanager.project.response.output.ProjectDTO;
@@ -45,6 +46,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public ProjectDTO getProject(Long id) {
 		log.info("Tentative de récupération d'un projet avec l'ID : {}", id);
+		
 		ProjectEntity project = projectRepository.findById(id)
 				.orElseThrow(() -> new ProjectNotFound("Projet non trouvé pour l'ID : " + id));
 		
@@ -53,11 +55,41 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectDTO updateProject(Long taskId, UpdateProjectRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	public ProjectDTO updateProject(Long id, UpdateProjectRequest request) {
+		log.info("Tentative de modification d'un projet avec l'ID : {}", id);
+		
+		ProjectEntity project = projectMapper.toEntity(this.getProject(id));
+		project.setName(request.name());
+		project.setDescription(request.description());
+		
+		ProjectEntity updatedProject = projectRepository.save(project);
+		
+		return projectMapper.toDTO(updatedProject);
+		
+	}
+
+	@Override
+	public ProjectDTO patchProject(Long id, PatchProjectRequest request) {
+		log.info("Tentative de patch d'un projet avec l'ID : {}", id);
+		
+		ProjectEntity project = projectMapper.toEntity(this.getProject(id));
+		request.name().ifPresent(project::setName);
+		request.description().ifPresent(project::setDescription);
+		
+		ProjectEntity patchedProject = projectRepository.save(project);
+		log.info("Projet patchée avec succès : ID {}", patchedProject.getId());
+		
+		return projectMapper.toDTO(patchedProject);
+		
 	}
 	
-	
-	
+	@Override
+	public void deleteProject(Long id) {
+		log.info("Tentative de suppression d'un projet avec l'ID : {}", id);
+		ProjectEntity project = projectMapper.toEntity(this.getProject(id));
+		
+		projectRepository.delete(project);
+		
+	}
+
 }
