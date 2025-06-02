@@ -8,10 +8,10 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "admin")
 public class AdminUser {
 	private String userName;
-	
-    private String email;
-    
-    private String password;
-    
-    private String role;
+
+	private String email;
+
+	private String password;
+
+	private String role;
 }
